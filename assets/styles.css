@@ -11,6 +11,8 @@
   --gold: #D4BC8C;
   --bronze: #7A6A4E;
   --line: #3A3935;
+  --motion-fast: 160ms;
+  --ease-standard: cubic-bezier(.2, .7, .2, 1);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -47,7 +49,7 @@ img.image-unavailable { background: var(--panel); color: var(--ivory); border: 1
   .skeleton-product { height: 360px; }
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
 
 body {
   background: var(--charcoal);
@@ -55,6 +57,8 @@ body {
   font-family: 'Hanken Grotesk', Helvetica, Arial, sans-serif;
   font-size: 17px;
   line-height: 1.55;
+  font-kerning: normal;
+  font-optical-sizing: auto;
 }
 
 .serif { font-family: 'Bodoni Moda', Georgia, serif; }
@@ -63,8 +67,17 @@ a { color: var(--ivory); text-decoration: none; }
 a:hover { color: var(--gold); }
 
 h1, h2, h3 { color: var(--ivory); font-weight: 400; }
+h1, h2, h3 { text-wrap: balance; }
+p { text-wrap: pretty; }
 
-.wrap { max-width: 1160px; margin: 0 auto; padding: 0 48px; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+
+.wrap {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding-left: max(48px, env(safe-area-inset-left));
+  padding-right: max(48px, env(safe-area-inset-right));
+}
 
 .cap {
   font-size: 13px;
@@ -99,7 +112,13 @@ nav.site {
   font-size: 15px;
   font-weight: 500;
 }
+nav.site a { display: inline-flex; min-height: 44px; align-items: center; }
 nav.site a.active { color: var(--gold); }
+.wrap header.site .brand { view-transition-name: opule-brand; }
+
+@view-transition { navigation: auto; }
+::view-transition-old(opule-brand),
+::view-transition-new(opule-brand) { animation-duration: 220ms; }
 
 footer.site {
   border-top: 1px solid var(--line);
@@ -118,7 +137,10 @@ footer.site .fine { font-size: 14px; }
 /* ---------- buttons ---------- */
 
 .btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
   font-family: inherit;
   font-size: 15px;
   font-weight: 600;
@@ -128,8 +150,15 @@ footer.site .fine { font-size: 14px; }
   background: none;
   color: var(--ivory);
   cursor: pointer;
+  text-align: center;
+  transform-origin: center;
+  transition: color var(--motion-fast) var(--ease-standard),
+    background-color var(--motion-fast) var(--ease-standard),
+    border-color var(--motion-fast) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard);
 }
-.btn:hover { border-color: var(--gold); color: var(--gold); }
+.btn:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
 
 .btn.fill {
   background: var(--gold);
@@ -157,6 +186,7 @@ footer.site .fine { font-size: 14px; }
   border-top: 1px solid var(--line);
   padding: 28px 0;
   color: inherit;
+  transition: background-color var(--motion-fast) var(--ease-standard);
 }
 a.row:hover { background: var(--panel); }
 a.row:hover .t h3 { color: var(--gold); }
@@ -200,6 +230,7 @@ a.row:hover .t h3 { color: var(--gold); }
   font-size: 24px;
   color: var(--ivory);
   text-align: right;
+  font-variant-numeric: lining-nums tabular-nums;
 }
 
 /* ---------- cards / panels ---------- */
@@ -245,20 +276,31 @@ input[type="date"], select, textarea {
   font-size: 16px;
   padding: 12px 14px;
   outline: none;
+  min-height: 48px;
 }
 input:focus, select:focus, textarea:focus { border-color: var(--gold); }
 textarea { min-height: 110px; resize: vertical; }
-select { appearance: none; }
+select { appearance: auto; color-scheme: dark; cursor: pointer; }
 
 .choices { display: flex; flex-wrap: wrap; gap: 12px; }
 .choices label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   border: 1px solid var(--line);
   padding: 10px 18px;
   font-size: 15px;
   cursor: pointer;
   user-select: none;
 }
-.choices input { display: none; }
+.choices input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.choices label:focus-within { outline: 2px solid var(--gold); outline-offset: 3px; }
 .choices label:hover { border-color: var(--bronze); }
 .choices label.on { border-color: var(--gold); color: var(--gold); }
 
@@ -309,9 +351,10 @@ select { appearance: none; }
   font-weight: 400;
   letter-spacing: -.01em;
   line-height: 1.1;
+  text-wrap: balance;
 }
 
-.market-sample-note { margin-top: 12px; max-width: 760px; font-size: 14px; }
+.market-sample-note { margin-top: 12px; max-width: 68ch; font-size: 14px; }
 .market-sample-note a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
 
 .listing-page { font-size: 19px; }
@@ -319,7 +362,10 @@ select { appearance: none; }
 .listing-page .two-col { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; }
 .listing-page .listing-title { font-size: clamp(40px, 4.6vw, 64px); line-height: 1.1; margin-top: 20px; overflow-wrap: anywhere; }
 .listing-price { font-size: 44px; color: var(--ivory); margin-top: 28px; }
-.listing-note { font-size: 17px; margin-top: 12px; line-height: 1.65; }
+.listing-price, .phone-price, .appointment-time output, .demo-coordinates dd {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.listing-note { max-width: 62ch; font-size: 17px; margin-top: 12px; line-height: 1.65; }
 .listing-page .market-sample-note { max-width: none; padding: 22px 26px; border: 1px solid var(--bronze); background: var(--panel); font-size: 17px; margin-bottom: 36px; }
 .listing-page .sample-product-photo { height: auto; min-height: 360px; max-height: 560px; object-fit: contain; background: var(--panel); }
 .listing-page .photo-credit { font-size: 16px; margin-top: 14px; }
@@ -335,7 +381,6 @@ select { appearance: none; }
 .listing-page .spot-card .kind { font-size: 14px; }
 .listing-page .spot-card .dist, .listing-page .spot-card .note { font-size: 18px; margin-top: 12px; }
 .listing-notice { margin-top: 28px; border: 1px solid var(--line); padding: 28px; }
-.listing-page :focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
 @media (max-width: 1000px) {
   .listing-page .two-col { grid-template-columns: minmax(0, 1fr); }
 }
@@ -471,7 +516,10 @@ select { appearance: none; }
 .demo-box button:hover { border-color: var(--bronze); color: var(--ivory); }
 
 @media (max-width: 900px) {
-  .wrap { padding: 0 24px; }
+  .wrap {
+    padding-left: max(24px, env(safe-area-inset-left));
+    padding-right: max(24px, env(safe-area-inset-right));
+  }
   .two-col { grid-template-columns: 1fr; gap: 48px; }
   .app-hero-grid { gap: 48px; }
   .app-headline { max-width: 640px; }
@@ -481,11 +529,20 @@ select { appearance: none; }
   .product-photo { width: 72px; height: 90px; }
   .row .meta { grid-column: 2; }
   .row .price { grid-column: 2; text-align: left; }
-  nav.site { display: none; }
+  header.site { flex-wrap: wrap; row-gap: 12px; }
+  nav.site {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-between;
+    gap: 0 16px;
+    font-size: 14px;
+  }
   .section > h2, h2.display { font-size: 34px; }
 }
 
 @media (max-width: 520px) {
+  footer.site { padding-bottom: max(64px, env(safe-area-inset-bottom)); }
   .app-hero { padding-top: 64px; }
   .app-headline { font-size: 48px; }
   .app-intro { font-size: 17px; }
@@ -493,4 +550,26 @@ select { appearance: none; }
   .app-visual-copy p { font-size: 20px; }
   .phone { width: 264px; }
   .phone-screen { min-height: 456px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+  .wrap header.site .brand { view-transition-name: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes opule-rise-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .steps > * { animation: opule-rise-in 380ms var(--ease-standard) both; }
+  .steps > :nth-child(2) { animation-delay: 50ms; }
+  .steps > :nth-child(3) { animation-delay: 100ms; }
+  .steps > :nth-child(4) { animation-delay: 150ms; }
 }

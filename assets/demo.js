@@ -702,8 +702,22 @@
   });
   async function addMessage(text, mine) {
     var senderId = mine ? (role === 'buyer' ? selectedBuyer.id : 'alex') : (role === 'buyer' ? 'alex' : selectedBuyer.id);
-    var message = await OPULE.db.sendMessage(conversationId, senderId, text);
-    drawMessage(message.text, mine, message.id);
+    var pending = null;
+    if (mine) {
+      pending = document.createElement('p');
+      pending.className = 'chat-bubble chat-mine chat-pending';
+      pending.textContent = text;
+      document.getElementById('chat-messages').appendChild(pending);
+      document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+    }
+    try {
+      var message = await OPULE.db.sendMessage(conversationId, senderId, text);
+      if (pending) pending.remove();
+      drawMessage(message.text, mine, message.id);
+    } catch (error) {
+      if (pending) pending.remove();
+      throw error;
+    }
   }
   function drawMessage(text, mine, id) {
     if (id && seenMessageIds.has(id)) return;
@@ -806,19 +820,34 @@
       document.getElementById('chat-form').requestSubmit();
     });
   });
-  document.getElementById('chat-form').addEventListener('submit', async function (event) {
+  var chatForm = document.getElementById('chat-form');
+  var sendStatus = document.createElement('p');
+  sendStatus.className = 'chat-send-status';
+  sendStatus.setAttribute('role', 'status');
+  sendStatus.setAttribute('aria-live', 'polite');
+  sendStatus.hidden = true;
+  chatForm.after(sendStatus);
+  chatForm.addEventListener('submit', async function (event) {
     event.preventDefault();
     if (!chatAvailable() || otherAgreement || completed) return;
     var input = document.getElementById('chat-message');
+    var sendButton = this.querySelector('.chat-send');
+    if (sendButton.disabled) return;
     var text = input.value.trim();
     if (!text) {
       input.setCustomValidity('Enter a message before sending.');
       input.reportValidity();
       return;
     }
+    sendStatus.hidden = true;
+    sendButton.disabled = true;
+    var messageSent = false;
     try {
     await addMessage(text, true);
     input.value = '';
+    messageSent = true;
+    sendStatus.textContent = 'Message sent in the demo chat.';
+    sendStatus.hidden = false;
     if (liveChat) return;
     var reply;
     if (/condition|accessor|inspect/i.test(text)) {
@@ -835,7 +864,15 @@
       reply = 'Thanks for your message. We can discuss the item, the ₱282,000 sample price, or meeting in Baliwag. The agreement controls stay separate from chat.';
     }
     await addMessage(reply + ' (Automated demo reply)', false);
-    } catch (error) { OPULE.db.report(error); }
+    } catch (error) {
+      sendStatus.textContent = messageSent
+        ? 'Your message was sent, but the automated demo reply could not be loaded.'
+        : 'The message could not be sent and was removed. Please try again.';
+      sendStatus.hidden = false;
+      OPULE.db.report(error);
+    } finally {
+      sendButton.disabled = false;
+    }
   });
   document.getElementById('chat-message').addEventListener('input', function () { this.setCustomValidity(''); });
   document.getElementById('suggested-venues').innerHTML = suggestedVenues.map(function (spot, index) {

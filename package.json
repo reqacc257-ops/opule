@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "build": "node server/build-static.js",
-    "start": "node --env-file=.env server/index.js",
+    "start": "node --env-file-if-exists=.env server/index.js",
     "test": "node --test server/test/*.test.js"
   },
-  "engines": { "node": ">=24" },
+  "engines": { "node": ">=24 <25" },
   "dependencies": {
     "express": "^5.1.0",
     "express-rate-limit": "^8.0.1",

@@ -11,6 +11,21 @@ import handler from '../../api/index.js';
 
 const root = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 
+test('Render Blueprint pins Node and prompts for production secrets', () => {
+  const packageJson = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+  const render = readFileSync(join(root, 'render.yaml'), 'utf8');
+  assert.equal(readFileSync(join(root, '.node-version'), 'utf8').trim(), '24.22.1');
+  assert.equal(packageJson.engines.node, '>=24 <25');
+  assert.match(packageJson.scripts.start, /--env-file-if-exists=\.env/);
+  assert.match(render, /runtime: node/);
+  assert.match(render, /startCommand: node server\/index\.js/);
+  assert.match(render, /healthCheckPath: \/api\/health/);
+  assert.match(render, /key: DATABASE_URL\r?\n\s+sync: false/);
+  assert.match(render, /key: DATA_ENCRYPTION_KEY\r?\n\s+sync: false/);
+  assert.match(render, /key: DATABASE_TLS\r?\n\s+value: "true"/);
+  assert.match(render, /key: ENABLE_DEMO\r?\n\s+value: "false"/);
+});
+
 test('Vercel builds only public pages and assets and routes every API path to the shared function', async () => {
   const config = JSON.parse(readFileSync(join(root, 'vercel.json'), 'utf8'));
   assert.equal(config.outputDirectory, 'dist');
@@ -29,6 +44,7 @@ test('Vercel builds only public pages and assets and routes every API path to th
 
 test('runtime rejects missing database and insecure production configuration before connecting', async () => {
   await assert.rejects(createRuntime({}), /APP_ORIGIN/);
+  await assert.rejects(createRuntime({ RENDER_EXTERNAL_URL: 'https://opule.onrender.com' }), /DATABASE_URL/);
   await assert.rejects(createRuntime({ APP_ORIGIN: 'http://localhost:3000' }), /DATABASE_URL/);
   await assert.rejects(createRuntime({
     APP_ORIGIN: 'http://localhost:3000', NODE_ENV: 'production', DATABASE_TLS: 'true'

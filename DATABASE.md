@@ -13,6 +13,17 @@ The site now needs the Node.js server, not `file://` URLs. Install Node 24 LTS a
 
 Windows local bootstrap is optional: set `PG_BIN` to the installed PostgreSQL `bin` directory, run `node server/setup.js initialize`, start `postgres -D data\postgres -h 127.0.0.1 -p 55432`, then run `node server/setup.js configure`. This generates a private `.env` and a non-superuser application role without printing passwords. The cluster stays in `data\postgres`.
 
+## Render deployment
+
+The root [render.yaml](render.yaml) Blueprint configures a Node.js web service with the Node version pinned in [.node-version](.node-version), a reproducible `npm ci` build, the production start command, and `/api/health` health checks. Create a Blueprint in Render from this repository and use the prompted environment variables:
+
+- `DATABASE_URL`: a production PostgreSQL connection string. For Render Postgres, use its **external** connection URL so PostgreSQL TLS certificates can be verified; internal Render Postgres TLS uses self-signed certificates and is not compatible with this app's strict certificate verification.
+- `DATA_ENCRYPTION_KEY`: generate a new key with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. Back it up securely and keep it unchanged for the lifetime of the database.
+
+The Blueprint sets `NODE_ENV=production`, `DATABASE_TLS=true`, and `ENABLE_DEMO=false`. Render supplies `PORT` and `RENDER_EXTERNAL_URL`; the server listens on the supplied port and uses the Render URL as its allowed origin. If you add a custom domain, set `APP_ORIGIN` in the Render service environment to that exact HTTPS origin (no trailing slash). Optionally set `DATABASE_CA_FILE` to the path of a trusted CA certificate if your PostgreSQL provider requires a custom CA.
+
+Use Render's Environment page or the Blueprint prompts for secrets; never put production values in `render.yaml` or commit them to `.env`. Use a PostgreSQL service with persistent storage; a free web service can sleep between requests, so select a paid web-service plan if you need always-on behavior. The first successful server startup initializes the schema. After deploy, confirm `/api/health` returns `{"ok":true}`.
+
 ## Vercel deployment
 
 Deploy from the repository root. [vercel.json](vercel.json) runs `npm run build`, publishes only the HTML pages and assets from `dist`, and routes **all** `/api/*` requests to [api/index.js](api/index.js). The function uses the same Express routes and PostgreSQL storage as the local server, without starting a separate listener.

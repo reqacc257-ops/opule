@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: opule
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: node server/index.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: DATA_ENCRYPTION_KEY
+        sync: false
+      - key: DATABASE_TLS
+        value: "true"
+      - key: ENABLE_DEMO
+        value: "false"
