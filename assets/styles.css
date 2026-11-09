@@ -1,0 +1,496 @@
+/* Opulé — shared styles
+   Palette: charcoal #1C1D1F · champagne gold #D4BC8C · bronze #7A6A4E
+   Type: Bodoni Moda (headlines) · Hanken Grotesk (body)
+   Square corners. Gold is rare. Bronze never carries text. */
+
+:root {
+  --charcoal: #1C1D1F;
+  --panel: #232427;
+  --ink: #B9B1A1;
+  --ivory: #EFE8D8;
+  --gold: #D4BC8C;
+  --bronze: #7A6A4E;
+  --line: #3A3935;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+.skeleton, img.image-loading {
+  background: linear-gradient(100deg, #232427 25%, #37352f 45%, #232427 65%);
+  background-size: 220% 100%;
+  animation: opule-shimmer 1.8s ease-in-out infinite;
+}
+.listing-page img.image-loading {
+  background: linear-gradient(100deg, #232427 25%, #37352f 45%, #232427 65%);
+  background-size: 220% 100%;
+}
+.skeleton { display: block; border: 1px solid var(--line); border-radius: 4px; }
+.skeleton-line { width: 100%; height: 16px; margin: 14px 0; }
+.skeleton-line.short { width: 55%; }
+.skeleton-title { height: 62px; margin: 22px 0; }
+.skeleton-price { width: 110px; height: 28px; }
+.skeleton-product { height: 520px; margin: 36px 0; }
+.skeleton-button { height: 52px; margin-top: 28px; }
+.skeleton-row { display: grid; grid-template-columns: 80px minmax(0, 1fr) 110px; align-items: center; gap: 24px; padding: 24px 0; border-top: 1px solid var(--line); }
+.skeleton-thumb { height: 80px; width: 80px; }
+img.image-loading { color: transparent; }
+img.image-unavailable { background: var(--panel); color: var(--ivory); border: 1px solid var(--bronze); animation: none; font-size: 11px; }
+.loading-error { padding: 24px; border: 1px solid var(--bronze); color: var(--ivory); }
+@keyframes opule-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .skeleton, img.image-loading, .listing-page img.image-loading { animation: none; background: var(--panel); }
+}
+@media (max-width: 600px) {
+  .skeleton-row { grid-template-columns: 64px minmax(0, 1fr); gap: 16px; }
+  .skeleton-thumb { width: 64px; height: 64px; }
+  .skeleton-row > .skeleton-price { grid-column: 2; }
+  .skeleton-product { height: 360px; }
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--charcoal);
+  color: var(--ink);
+  font-family: 'Hanken Grotesk', Helvetica, Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.serif { font-family: 'Bodoni Moda', Georgia, serif; }
+
+a { color: var(--ivory); text-decoration: none; }
+a:hover { color: var(--gold); }
+
+h1, h2, h3 { color: var(--ivory); font-weight: 400; }
+
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 48px; }
+
+.cap {
+  font-size: 13px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* ---------- header / footer ---------- */
+
+header.site {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 28px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  font-family: 'Bodoni Moda', Georgia, serif;
+  font-size: 26px;
+  letter-spacing: .2em;
+  color: var(--gold);
+}
+.brand:hover { color: var(--gold); }
+
+nav.site {
+  display: flex;
+  gap: 36px;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 500;
+}
+nav.site a.active { color: var(--gold); }
+
+footer.site {
+  border-top: 1px solid var(--line);
+  margin-top: 120px;
+  padding: 48px 0 64px;
+}
+footer.site .wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+footer.site .fine { font-size: 14px; }
+
+/* ---------- buttons ---------- */
+
+.btn {
+  display: inline-block;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  padding: 14px 28px;
+  border: 1px solid var(--ivory);
+  background: none;
+  color: var(--ivory);
+  cursor: pointer;
+}
+.btn:hover { border-color: var(--gold); color: var(--gold); }
+
+.btn.fill {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--charcoal);
+}
+.btn.fill:hover { background: var(--ivory); border-color: var(--ivory); color: var(--charcoal); }
+
+.btn.quiet {
+  border-color: var(--line);
+  color: var(--ink);
+  font-weight: 500;
+}
+.btn.quiet:hover { border-color: var(--bronze); color: var(--ivory); }
+
+/* ---------- ledger rows ---------- */
+
+.ledger { border-bottom: 1px solid var(--line); }
+
+.row {
+  display: grid;
+  grid-template-columns: 96px 1fr 200px 160px 140px;
+  gap: 32px;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  padding: 28px 0;
+  color: inherit;
+}
+a.row:hover { background: var(--panel); }
+a.row:hover .t h3 { color: var(--gold); }
+
+.ph {
+  width: 96px;
+  height: 120px;
+  background: #2A2B2E;
+  border: 1px solid var(--line);
+}
+
+.product-photo { position: relative; display: block; width: 96px; height: 120px; }
+.product-photo .ph { display: block; width: 100%; height: 100%; object-fit: cover; }
+.photo-badge {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  padding: 2px 5px;
+  background: #1C1D1Fdd;
+  color: var(--ivory);
+  font-size: 9px;
+  line-height: 1.4;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.sample-product-photo { display: block; width: 100%; height: 360px; object-fit: cover; border: 1px solid var(--line); }
+.photo-credit { margin-top: 8px; color: var(--ink); font-size: 13px; }
+.photo-credit a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+
+.row .t h3 {
+  font-family: 'Bodoni Moda', Georgia, serif;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.15;
+}
+.row .t p { font-size: 15px; margin-top: 4px; }
+
+.row .meta { font-size: 15px; }
+.row .price {
+  font-family: 'Bodoni Moda', Georgia, serif;
+  font-size: 24px;
+  color: var(--ivory);
+  text-align: right;
+}
+
+/* ---------- cards / panels ---------- */
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--bronze);
+  padding: 36px 40px;
+}
+
+.panel .head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 24px;
+}
+
+.rule { border: none; border-top: 1px solid var(--line); margin: 28px 0; }
+
+dl.facts { display: grid; grid-template-columns: 120px 1fr; row-gap: 12px; column-gap: 24px; font-size: 15px; }
+dl.facts dt { letter-spacing: .14em; text-transform: uppercase; font-size: 12px; color: var(--gold); padding-top: 3px; }
+dl.facts dd { color: var(--ink); }
+
+/* ---------- forms ---------- */
+
+label.field { display: block; margin-bottom: 24px; }
+label.field > span {
+  display: block;
+  font-size: 13px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+input[type="text"], input[type="tel"], input[type="email"], input[type="number"],
+input[type="date"], select, textarea {
+  width: 100%;
+  background: var(--charcoal);
+  border: 1px solid var(--line);
+  color: var(--ivory);
+  font-family: inherit;
+  font-size: 16px;
+  padding: 12px 14px;
+  outline: none;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+textarea { min-height: 110px; resize: vertical; }
+select { appearance: none; }
+
+.choices { display: flex; flex-wrap: wrap; gap: 12px; }
+.choices label {
+  border: 1px solid var(--line);
+  padding: 10px 18px;
+  font-size: 15px;
+  cursor: pointer;
+  user-select: none;
+}
+.choices input { display: none; }
+.choices label:hover { border-color: var(--bronze); }
+.choices label.on { border-color: var(--gold); color: var(--gold); }
+
+.form-note { font-size: 14px; }
+.error-note { color: var(--gold); font-size: 15px; margin-top: 16px; display: none; }
+
+/* ---------- steps ---------- */
+
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 48px; }
+.steps .n { font-size: 64px; line-height: 1; color: var(--gold); font-family: 'Bodoni Moda', Georgia, serif; }
+.steps h3 { margin: 20px 0 8px; font-size: 20px; font-weight: 600; }
+.steps p { font-size: 16px; }
+
+/* ---------- spot suggestions ---------- */
+
+.spot-card { border: 1px solid var(--line); padding: 24px 28px; margin-top: 16px; }
+.spot-card.best { border-color: var(--gold); }
+.spot-card .top { display: flex; justify-content: space-between; align-items: baseline; }
+.spot-card .top h3 { font-family: 'Bodoni Moda', Georgia, serif; font-size: 22px; font-weight: 400; }
+.spot-card .kind { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
+.spot-card .dist { font-size: 15px; margin-top: 10px; }
+.spot-card .note { font-size: 15px; margin-top: 6px; }
+.spot-map-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.map-location-note { font-size: 14px; margin-top: 12px; line-height: 1.6; }
+
+/* ---------- status ---------- */
+
+.checklist { list-style: none; }
+.checklist li {
+  border-top: 1px solid var(--line);
+  padding: 18px 0;
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 16px;
+  align-items: baseline;
+}
+.checklist .mark { color: var(--gold); font-size: 16px; }
+.checklist .state { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); }
+.checklist .state.done { color: var(--gold); }
+
+/* ---------- misc ---------- */
+
+.two-col { display: grid; grid-template-columns: 5fr 6fr; gap: 80px; align-items: start; }
+.section { padding-top: 96px; }
+.section > h2, h2.display {
+  font-family: 'Bodoni Moda', Georgia, serif;
+  font-size: 44px;
+  font-weight: 400;
+  letter-spacing: -.01em;
+  line-height: 1.1;
+}
+
+.market-sample-note { margin-top: 12px; max-width: 760px; font-size: 14px; }
+.market-sample-note a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+
+.listing-page { font-size: 19px; }
+.listing-page .wrap { max-width: 1360px; }
+.listing-page .two-col { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; }
+.listing-page .listing-title { font-size: clamp(40px, 4.6vw, 64px); line-height: 1.1; margin-top: 20px; overflow-wrap: anywhere; }
+.listing-price { font-size: 44px; color: var(--ivory); margin-top: 28px; }
+.listing-note { font-size: 17px; margin-top: 12px; line-height: 1.65; }
+.listing-page .market-sample-note { max-width: none; padding: 22px 26px; border: 1px solid var(--bronze); background: var(--panel); font-size: 17px; margin-bottom: 36px; }
+.listing-page .sample-product-photo { height: auto; min-height: 360px; max-height: 560px; object-fit: contain; background: var(--panel); }
+.listing-page .photo-credit { font-size: 16px; margin-top: 14px; }
+.listing-page dl.facts { font-size: 18px; row-gap: 20px; grid-template-columns: 110px minmax(0, 1fr); }
+.listing-page dl.facts dt { font-size: 14px; }
+.listing-page .cap, .listing-page label.field > span { font-size: 15px; }
+.listing-page .panel .head .cap { font-size: 19px; letter-spacing: .1em; }
+.listing-page select { font-size: 18px; padding: 16px 40px 16px 18px; min-height: 58px; appearance: auto; }
+.listing-page .btn { font-size: 17px; min-height: 52px; }
+.listing-page .spot-card { padding: 28px; margin-top: 24px; background: var(--charcoal); }
+.listing-page .spot-card .top { flex-wrap: wrap; gap: 10px; }
+.listing-page .spot-card .top h3 { font-size: 29px; line-height: 1.2; }
+.listing-page .spot-card .kind { font-size: 14px; }
+.listing-page .spot-card .dist, .listing-page .spot-card .note { font-size: 18px; margin-top: 12px; }
+.listing-notice { margin-top: 28px; border: 1px solid var(--line); padding: 28px; }
+.listing-page :focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+@media (max-width: 1000px) {
+  .listing-page .two-col { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .listing-page .panel { padding: 24px 20px; }
+  .listing-page .market-sample-note, .listing-notice, .listing-page .spot-card { padding: 20px; }
+  .listing-page .sample-product-photo { min-height: 0; }
+  .listing-page dl.facts { grid-template-columns: minmax(0, 1fr); row-gap: 8px; }
+  .listing-page dl.facts dd { margin-bottom: 16px; }
+  .listing-page .listing-title { font-size: 40px; }
+}
+
+.app-hero { padding-top: 88px; }
+.app-hero-grid { align-items: center; }
+.app-eyebrow { margin-bottom: 28px; }
+.app-headline {
+  font-size: clamp(52px, 6vw, 76px);
+  line-height: 1;
+  letter-spacing: -.02em;
+}
+.app-intro { margin-top: 28px; max-width: 520px; font-size: 19px; }
+.app-actions { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 36px; }
+.app-availability { margin-top: 20px; font-size: 14px; color: var(--ink); }
+
+.app-visual {
+  position: relative;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 20px;
+  border: 1px solid var(--line);
+  background: radial-gradient(ellipse at 50% 45%, #34312b 0, var(--panel) 46%, var(--charcoal) 78%);
+}
+.app-visual-copy { position: static; width: 100%; text-align: center; }
+.app-visual-copy p { margin-top: 8px; color: var(--ivory); font-size: 23px; }
+.phone {
+  width: 286px;
+  flex: 0 0 auto;
+  margin-top: 18px;
+  padding: 8px;
+  border: 1px solid #82775f;
+  border-radius: 34px;
+  background: #111214;
+  box-shadow: 0 24px 70px #0008;
+  transform: rotate(-3deg);
+}
+.phone-screen {
+  min-height: 474px;
+  padding: 16px 18px 20px;
+  border: 1px solid #44413a;
+  border-radius: 27px;
+  background: var(--panel);
+}
+.phone-status { display: flex; justify-content: space-between; color: var(--ivory); font-size: 10px; font-weight: 600; }
+.phone-brand {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  color: var(--gold);
+  font-family: 'Bodoni Moda', Georgia, serif;
+  font-size: 16px;
+  letter-spacing: .16em;
+}
+.phone-brand span { color: var(--ink); letter-spacing: .08em; }
+.phone-label { margin-top: 20px; font-size: 10px; }
+.phone-item { margin-top: 7px; color: var(--ivory); font-size: 21px; line-height: 1.2; }
+.phone-price { margin-top: 6px; color: var(--ivory); font-size: 13px; }
+.phone-price span { color: var(--ink); }
+.phone-divider { margin: 18px 0; border-top: 1px solid var(--line); }
+.phone-check { display: flex; align-items: center; gap: 11px; margin: 13px 0; }
+.phone-check-icon {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  color: var(--gold);
+  font-size: 12px;
+}
+.phone-check b, .phone-check small, .phone-meeting b, .phone-meeting small { display: block; }
+.phone-check b { color: var(--ivory); font-size: 12px; font-weight: 500; }
+.phone-check small, .phone-meeting small { margin-top: 2px; font-size: 10px; }
+.phone-meeting { margin-top: 18px; padding: 13px; border: 1px solid var(--line); }
+.phone-meeting .cap { display: block; margin-bottom: 6px; font-size: 9px; }
+.phone-meeting b { color: var(--ivory); font-size: 12px; font-weight: 500; }
+.phone-confirm {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding: 11px 12px;
+  background: var(--gold);
+  color: var(--charcoal);
+  font-size: 11px;
+  font-weight: 600;
+}
+.app-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  align-self: stretch;
+  max-width: 300px;
+  margin: 18px auto 0;
+  padding: 14px 16px;
+  border: 1px solid var(--bronze);
+  background: var(--charcoal);
+  box-shadow: 0 12px 32px #0006;
+}
+.app-note-mark { color: var(--gold); font-size: 20px; }
+.app-note b, .app-note small { display: block; }
+.app-note b { color: var(--ivory); font-size: 12px; font-weight: 500; }
+.app-note small { margin-top: 3px; font-size: 11px; line-height: 1.4; }
+
+.demo-box {
+  border: 1px dashed var(--line);
+  padding: 20px 24px;
+  margin-top: 48px;
+  font-size: 14px;
+}
+.demo-box button {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 14px;
+  cursor: pointer;
+  margin: 8px 12px 0 0;
+}
+.demo-box button:hover { border-color: var(--bronze); color: var(--ivory); }
+
+@media (max-width: 900px) {
+  .wrap { padding: 0 24px; }
+  .two-col { grid-template-columns: 1fr; gap: 48px; }
+  .app-hero-grid { gap: 48px; }
+  .app-headline { max-width: 640px; }
+  .steps { grid-template-columns: 1fr 1fr; gap: 40px; }
+  .row { grid-template-columns: 72px 1fr; gap: 16px; }
+  .ph { width: 72px; height: 90px; }
+  .product-photo { width: 72px; height: 90px; }
+  .row .meta { grid-column: 2; }
+  .row .price { grid-column: 2; text-align: left; }
+  nav.site { display: none; }
+  .section > h2, h2.display { font-size: 34px; }
+}
+
+@media (max-width: 520px) {
+  .app-hero { padding-top: 64px; }
+  .app-headline { font-size: 48px; }
+  .app-intro { font-size: 17px; }
+  .app-actions { gap: 12px; }
+  .app-visual-copy p { font-size: 20px; }
+  .phone { width: 264px; }
+  .phone-screen { min-height: 456px; }
+}
