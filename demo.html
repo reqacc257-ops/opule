@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Opulé — Test the handover</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/demo.css">
+  <script src="assets/loading.js" defer></script>
+</head>
+<body>
+  <dialog id="role-dialog" class="role-dialog" aria-labelledby="role-heading">
+    <p class="cap">Test the app</p>
+    <h2 id="role-heading" class="serif">Choose your demo account.</h2>
+    <p>Two fictional accounts, one sample conversation. Switch accounts to see which messages each person sends and receives.</p>
+    <div class="demo-accounts">
+      <article class="demo-account"><img src="assets/images/demo-buyer.jpg" alt="Stock portrait for fictional buyer Jamie"><div><p class="cap">Buyer account · DEMO-B01</p><h3>Jamie R.</h3><p>Baliwag, Bulacan · member since 2025</p><p>8 sample transactions · 4.9/5</p></div><button class="btn fill" id="choose-buyer" type="button">Use Jamie · Buyer POV</button></article>
+      <article class="demo-account"><img src="assets/images/demo-seller.jpg" alt="Stock portrait for fictional seller Alex"><div><p class="cap">Seller account · DEMO-S01</p><h3>Alex S.</h3><p>Baliwag, Bulacan · member since 2024</p><p>Selling the sample Hermès Roulis 23</p></div><button class="btn" id="choose-seller" type="button">Use Alex · Seller POV</button></article>
+    </div>
+    <p class="form-note">No email or password needed. Local demo accounts share persistent chat history in this browser database, not across devices. Switching clears simulated GPS and identity checks, not saved messages.</p>
+    <p class="form-note"><a href="index.html">Back to website</a></p>
+  </dialog>
+  <div class="wrap">
+    <header class="site">
+      <a class="brand" href="index.html">OPULÉ</a>
+      <a class="btn quiet" href="index.html">Back to website</a>
+    </header>
+  </div>
+  <main class="wrap section handover-demo">
+    <p class="cap">Interactive app preview</p>
+    <h1 class="serif">A handover, step by step.</h1>
+    <p class="demo-intro">Buyers start in a familiar messaging view. Sellers can filter sample buyer enquiries by transaction history, distance, and verification before chatting. Agree on the price and meeting intent, choose a place together, then test the handover.</p>
+    <div class="demo-actions"><button class="btn fill" id="open-preview" type="button">Open phone preview</button></div>
+    <p id="simulation-summary" class="demo-disclaimer" role="status" hidden></p>
+    <p class="demo-disclaimer">Simulation only. Locations, names, and verification details are fictional; portraits are stock photos. No GPS permission, identity checks, escrow, or payments are used. Being nearby is not proof of identity. The 30-metre radius is a demo rule, not a real safety guarantee.</p>
+    <dialog id="phone-dialog" class="phone-dialog" aria-labelledby="phone-heading">
+    <div class="device-status" aria-hidden="true"><span>9:41</span><span class="device-island"></span><span>LTE · 100%</span></div>
+    <header class="device-header">
+      <button class="device-icon" id="close-preview" type="button" aria-label="Close phone preview">&times;</button>
+      <div><span class="brand">OPULÉ</span><h2 id="phone-heading">Your handover</h2></div>
+      <button class="device-icon" id="switch-role" type="button" aria-label="Switch demo account">Switch</button>
+    </header>
+    <div id="completion-notification" class="completion-notification" role="status" aria-live="polite" hidden>
+      <span aria-hidden="true">✓</span><div><strong id="completion-title">Item accepted. Handover complete.</strong><p id="completion-message">Simulated payment released. No real money moved.</p></div>
+    </div>
+    <div class="device-scroll" id="device-scroll">
+    <div class="device-context"><span class="cap" id="viewpoint-label"></span><span class="simulation-tag">DEMO · NO REAL GPS</span></div>
+    <p id="active-demo-account" class="active-demo-account"></p>
+    <p class="demo-intro" id="viewpoint-intro">Choose your viewpoint to explore the handover.</p>
+    <div class="device-item"><img src="assets/images/handbag.jpg" alt="Illustrative stock handbag, not the exact sample item"><div><span class="cap">Handover #OP-0024</span><h3>Hermès Roulis 23</h3><p>₱282,000 · sample item</p></div></div>
+    <section id="seller-inbox" class="seller-inbox" aria-labelledby="inbox-heading" hidden>
+      <p class="cap">Seller workspace</p>
+      <h2 id="inbox-heading">Buyer enquiries</h2>
+      <p class="form-note">Compare fictional buyers before opening a conversation. History and verification are sample values, not trust or payment guarantees.</p>
+      <div class="buyer-filters">
+        <label class="field"><span>Completed transactions</span><select id="filter-history"><option value="all">Any history</option><option value="returning">Has previous transactions</option><option value="experienced">5+ completed transactions</option><option value="new">No previous transactions</option></select></label>
+        <label class="field"><span>Approximate distance</span><select id="filter-distance"><option value="all">Any distance</option><option value="1">Within 1 km</option><option value="5">Within 5 km</option><option value="15">Within 15 km</option><option value="30">Within 30 km</option></select></label>
+        <label class="inspection"><input id="filter-verified" type="checkbox"> Sample ID-checked buyers only</label>
+        <label class="field"><span>Sort enquiries</span><select id="sort-buyers"><option value="nearest">Nearest first</option><option value="transactions">Most completed transactions</option></select></label>
+        <button id="clear-buyer-filters" class="btn quiet" type="button">Clear filters</button>
+      </div>
+      <p id="buyer-results-status" class="form-note" role="status" aria-live="polite"></p>
+      <div id="buyer-results" class="buyer-results"></div>
+      <p class="form-note">Distances are invented area-level estimates from the sample seller area, Baliwag, Bulacan—not live GPS or routes. Only summary history is shown, never past counterparties or private transactions.</p>
+    </section>
+    <section id="agreement-step" class="agreement-step" aria-labelledby="agreement-heading">
+      <button id="back-to-buyers" class="btn quiet" type="button" hidden>Filter buyer enquiries · resets this chat &amp; plan</button>
+      <div class="chat-heading"><img id="chat-avatar" src="assets/images/demo-seller.jpg" alt="Stock portrait of your fictional chat partner"><span id="chat-initials" class="buyer-initials" aria-hidden="true" hidden></span><div><h2 id="agreement-heading">Alex S.</h2><p id="chat-subtitle" class="form-note">Seller · simulated conversation</p></div><button id="chat-info-toggle" class="chat-info-toggle" type="button" aria-label="Show conversation details" aria-expanded="false" aria-controls="chat-details">i</button></div>
+      <div id="chat-details" class="chat-details" hidden><p id="chat-details-text"></p><p class="form-note">Fictional profile. Being ID-checked, experienced, or nearby does not guarantee a safe transaction.</p></div>
+      <p class="chat-date">Today · demo conversation</p>
+      <p class="form-note">Preloaded sample chat. The same conversation appears from Jamie's and Alex's POV. Open “Agree together” to confirm the offer separately.</p>
+      <div id="chat-messages" class="chat-messages" role="log" aria-label="Simulated conversation" aria-live="polite"></div>
+      <div class="chat-quick-replies" role="group" aria-label="Suggested messages"><button type="button" data-message="Is the item still available?">Still available?</button><button type="button" data-message="Could you describe the condition of the piece?">Item condition</button><button type="button" data-message="Can we meet in Baliwag to inspect the piece?">Meet in Baliwag?</button></div>
+      <form id="chat-form" class="chat-composer">
+        <label class="form-note" for="chat-message">Message · demo only; no personal information</label>
+        <div><input id="chat-message" type="text" maxlength="400" placeholder="Aa" required autocomplete="off"><button class="btn chat-send" type="submit" aria-label="Send demo message"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3 3l19 9-19 9 3-8 9-1-9-1z" fill="currentColor"/></svg></button></div>
+      </form>
+      <p class="chat-delivery">Demo only · messages are not delivered to anyone</p>
+      <button id="open-agreement" class="btn fill" type="button" aria-haspopup="dialog" aria-controls="agreement-dialog">Agree together</button>
+      <p class="form-note">Confirm the price and meeting intent in the pop-up before choosing a venue.</p>
+    </section>
+    <section id="venue-step" class="agreement-step" aria-labelledby="venue-heading" hidden>
+      <p class="cap">Both agreed · now choose your place</p>
+      <h2 id="venue-heading" class="serif">Where shall you meet?</h2>
+      <div class="photo-kind" role="group" aria-label="Venue selection method"><button id="use-suggestions" class="btn" type="button" aria-pressed="true">Opulé suggestions</button><button id="use-custom" class="btn quiet" type="button" aria-pressed="false">Choose ourselves</button></div>
+      <div id="suggested-venues"></div>
+      <p class="form-note">Baliwag, Bulacan sample: nearby bistros and cafés within 8 km of the approximate area center. Check the branch, hours, and seating; venues are not staff-vetted.</p>
+      <div id="custom-venue" hidden>
+        <label class="field"><span>Public venue name</span><input id="custom-name" type="text" maxlength="100" placeholder="A café or bistro in Baliwag"></label>
+        <label class="field"><span>Full meeting address</span><input id="custom-address" type="text" maxlength="250" placeholder="Street, barangay, Baliwag, Bulacan"></label>
+        <p class="form-note">Choose a public location and verify it together. Custom venues are not reviewed by Opulé; GPS below remains illustrative, not geocoded.</p>
+      </div>
+      <p class="cap booking-label">Your appointment · Philippine time</p>
+      <input id="meeting-time" type="hidden">
+      <button id="open-schedule" class="schedule-trigger" type="button" aria-haspopup="dialog" aria-controls="schedule-dialog"><span id="meeting-time-label">Select a date &amp; time</span><span aria-hidden="true">&rsaquo;</span></button>
+      <button id="confirm-venue" class="btn fill" type="button">Propose this meeting plan</button>
+      <div id="other-venue" class="other-party" hidden><p id="proposed-venue"></p><button id="simulate-venue" class="btn quiet" type="button">Simulate other party accepting venue</button><button id="edit-venue" class="btn quiet" type="button">Edit proposal</button></div>
+      <p id="venue-status" class="handover-status" role="status" aria-live="polite">Select a place and time. Both people must confirm the same plan.</p>
+    </section>
+    <p id="agreement-summary" class="handover-status" hidden></p>
+    <ol class="demo-progress" aria-label="Handover steps">
+      <li id="step-arrive" aria-current="step">1. Meet nearby</li>
+      <li id="step-verify">2. Check each other</li>
+      <li id="step-release">3. Inspect &amp; hand over</li>
+    </ol>
+
+    <div class="demo-grid">
+      <section class="panel demo-location" aria-labelledby="location-heading">
+        <p class="cap">Simulated live location</p>
+        <h2 id="location-heading" class="serif">Meet at RICH Bistro, Baliwag</h2>
+        <p id="location-note" class="form-note">Illustrative venue only; no meetup is being arranged.</p>
+        <div class="spot-map-links"><a id="meeting-google-maps" class="btn quiet" target="_blank" rel="noopener noreferrer">Google Maps</a><a id="meeting-apple-maps" class="btn quiet" target="_blank" rel="noopener noreferrer">Apple Maps</a></div>
+        <svg class="demo-map" viewBox="0 0 360 300" role="img" aria-labelledby="map-title map-description">
+          <title id="map-title">Simulated buyer and seller proximity</title>
+          <desc id="map-description">Move your simulated position into the 30-metre meeting circle using the distance slider.</desc>
+          <path class="map-street" d="M0 50H360 M0 150H360 M0 250H360 M65 0V300 M295 0V300"/>
+          <rect class="map-block" x="82" y="65" width="60" height="60"/>
+          <rect class="map-block" x="235" y="165" width="45" height="65"/>
+          <circle class="map-radius" cx="180" cy="230" r="30"/>
+          <path id="map-connection" class="map-connection" d="M180 230V50"/>
+          <text class="map-label" x="218" y="273">30 m meeting zone</text>
+          <g id="seller-marker" transform="translate(180 230)">
+            <circle class="seller-pin" r="11"/><text class="pin-letter" id="fixed-pin-letter" y="4">S</text>
+          </g>
+          <text id="fixed-marker-label" class="map-label" x="195" y="233">Seller / meetup</text>
+          <g id="buyer-marker" transform="translate(180 50)">
+            <circle class="buyer-pin" r="11"/><text class="pin-letter" id="moving-pin-letter" y="4">B</text>
+            <text id="moving-marker-label" class="map-label" x="16" y="4">Buyer (you)</text>
+          </g>
+          <text class="map-label" x="12" y="20">SCHEMATIC · NOT A REAL MAP</text>
+        </svg>
+        <div class="distance-summary"><strong id="distance-value">180 m apart</strong><span id="proximity-badge">Outside meeting zone</span></div>
+        <div class="location-test-controls">
+        <p class="cap">Test controls · simulated movement</p>
+        <label class="distance-control" for="distance">Your distance from the other person</label>
+        <input id="distance" type="range" min="0" max="200" step="1" value="180" aria-describedby="distance-help">
+        <p id="distance-help" class="form-note">Within 30 m of each other and the meeting point, profiles become visible. Moving out of range clears all confirmations.</p>
+        <div class="demo-actions">
+          <button class="btn fill" id="arrive" type="button">Simulate arrival (12 m)</button>
+          <button class="btn quiet" id="reset" type="button">Restart demo</button>
+        </div>
+        </div>
+        <details class="coordinate-details"><summary>View simulated GPS coordinates</summary>
+        <dl class="demo-coordinates">
+          <dt>Seller GPS (simulated)</dt><dd id="seller-coordinates"></dd>
+          <dt>Buyer GPS (simulated)</dt><dd id="buyer-coordinates"></dd>
+        </dl>
+        </details>
+      </section>
+
+      <section class="panel demo-confirmation" aria-labelledby="confirmation-heading">
+        <p class="cap">Both sides must confirm</p>
+        <h2 id="confirmation-heading" class="serif">Know who you are meeting.</h2>
+        <div id="handover-status" class="handover-status" role="status" aria-live="polite" aria-atomic="true">Waiting for the buyer to enter the meeting zone.</div>
+        <p id="profile-lock">Sample faces and details appear when both participants are within the demo meeting zone.</p>
+        <div id="profiles" hidden>
+          <div id="buyer-view">
+          <article class="demo-profile">
+            <img src="assets/images/demo-seller.jpg" alt="Stock portrait representing the fictional seller" width="80" height="80">
+            <div><p class="cap">Seller · fictional profile</p><h3>Alex S.</h3><p>Baliwag · member since 2024</p><p class="profile-verification">Sample: ID + video checked</p></div>
+          </article>
+          <button class="btn" id="confirm-seller" type="button">This is the seller</button>
+          </div>
+          <div id="seller-view">
+          <article class="demo-profile">
+            <img id="handover-buyer-photo" src="assets/images/demo-buyer.jpg" alt="Stock portrait representing the fictional buyer" width="80" height="80">
+            <span id="handover-buyer-initials" class="buyer-initials" aria-hidden="true" hidden></span>
+            <div><p class="cap">Buyer · fictional profile</p><h3 id="handover-buyer-name">Jamie R.</h3><p id="handover-buyer-area">Baliwag · member since 2025</p><p id="handover-buyer-verification" class="profile-verification">Sample: ID + mobile checked</p><p id="handover-buyer-history"></p></div>
+          </article>
+          <button class="btn" id="confirm-buyer" type="button">This is the buyer</button>
+          </div>
+          <div id="other-party" class="other-party" hidden>
+            <p class="form-note">Test control: simulate the other person's independent response.</p>
+            <button class="btn quiet" id="simulate-other" type="button">Simulate other person confirming</button>
+          </div>
+          <button class="btn quiet mismatch-button" id="mismatch" type="button">Someone does not match</button>
+        </div>
+        <div class="demo-transaction">
+          <p class="cap" id="transaction-heading">Inspect &amp; receive</p>
+          <p id="funds-status">₱282,000 · simulated funds held</p>
+          <label class="inspection" id="seller-delivery" hidden><input id="delivered" type="checkbox" disabled> I handed the item to the buyer for inspection.</label>
+          <label class="inspection"><input id="inspected" type="checkbox" disabled> <span id="inspection-label">I inspected and received the item.</span></label>
+          <button class="btn fill" id="complete" type="button" disabled>Complete test handover</button>
+          <p class="form-note">GPS never releases funds by itself. Both identity confirmations and item acceptance are required. Controls labeled “simulate” stand in for the other participant; a real app needs independent, authenticated confirmations.</p>
+        </div>
+      </section>
+    </div>
+    <section id="photo-reward" class="photo-reward" aria-labelledby="photo-heading" hidden>
+      <div class="celebration-star" aria-hidden="true">★</div>
+      <p class="cap">One happy handover. One more star.</p>
+      <h2 id="photo-heading" class="serif" tabindex="-1">Celebrate with a selfie?</h2>
+      <p id="photo-invitation">Optional: take a photo of your received item and earn one demo star.</p>
+      <p class="form-note">Take an optional camera photo to earn one star automatically. Only include yourself, unless anyone else pictured agrees. Avoid IDs, receipts, and location details. Nothing is uploaded or saved, and this is not an identity check. Camera permission is required only if you open the camera.</p>
+      <div class="photo-kind" role="group" aria-label="Photo type">
+        <button id="choose-selfie" class="btn" type="button" aria-pressed="true">Selfie</button>
+        <button id="choose-item-photo" class="btn quiet" type="button" aria-pressed="false">Item photo</button>
+      </div>
+      <button id="open-camera" class="btn" type="button">Open camera</button>
+      <video id="camera-preview" class="reward-photo" autoplay muted playsinline aria-label="Live camera preview" hidden></video>
+      <img id="photo-preview" class="reward-photo" alt="Preview of your optional handover selfie" hidden>
+      <p id="photo-feedback" class="photo-feedback" role="status" aria-live="polite"></p>
+      <button id="capture-photo" class="btn fill" type="button" disabled>Take picture · earn 1 star</button>
+      <div class="star-card">
+        <p class="cap">Your demo stars</p>
+        <div id="star-visual" class="star-visual" aria-hidden="true"></div>
+        <p id="star-count"></p>
+        <progress id="star-progress" max="10" value="0" aria-label="Stars toward your next coffee"></progress>
+        <p id="coffee-reward"></p>
+        <p class="form-note">Every 10 camera-photo stars unlocks one simulated Starbucks coffee. Demo only: no real voucher, redemption, or Starbucks partnership. Only the star count is saved in this browser; it is not a real rewards account.</p>
+      </div>
+      <button id="end-simulation" class="btn quiet" type="button">Skip photo &amp; end simulation</button>
+    </section>
+    <p class="device-safety">Demo only. Faces and verification are fictional. Proximity does not verify identity; no real funds are held or released.</p>
+    </div>
+    <div class="device-home" aria-hidden="true"><span></span></div>
+    </dialog>
+    <dialog id="agreement-dialog" class="agreement-dialog" aria-labelledby="offer-heading" aria-describedby="offer-description">
+      <div class="offer-header"><div><p class="cap">Agree together</p><h2 id="offer-heading" class="serif">Ready to meet?</h2></div><button id="close-agreement" class="device-icon" type="button" aria-label="Close agreement pop-up" autofocus>&times;</button></div>
+      <p id="offer-description" class="form-note">Sending a chat message is not agreement. Both people must accept this sample price and meeting intent before choosing a venue.</p>
+      <p id="offer-participants" class="form-note"></p>
+      <label class="inspection"><input id="agree-price" type="checkbox"> I agree to the ₱282,000 price.</label>
+      <label class="inspection"><input id="agree-meeting" type="checkbox"> I agree to meet in Baliwag, Bulacan.</label>
+      <button id="accept-plan" class="btn fill" type="button" disabled>Agree on price &amp; meeting intent</button>
+      <div id="other-agreement" class="other-party" hidden><p class="form-note">Test control: the other party must independently accept the same offer.</p><button id="simulate-agreement" class="btn quiet" type="button">Simulate other party agreeing</button></div>
+      <p id="agreement-status" class="handover-status" role="status" aria-live="polite">The handover is locked until both parties agree.</p>
+    </dialog>
+ <a href="https://unsplash.com/photos/woman-with-curly-blonde-hair-7YfFc2mzmvo" target="_blank" rel="noopener noreferrer">Vitaly Gariev</a> and <a href="https://unsplash.com/photos/man-with-curly-hair-looking-upward-cRuEN_VkBxc" target="_blank" rel="noopener noreferrer">Felipe Souza</a>, via Unsplash. These people are not Opulé users and do not endorse this demo.</p>
+  </main>
+  <script src="assets/app.js"></script>
+  <script src="assets/database.js"></script>
+  <dialog id="schedule-dialog" class="agreement-dialog schedule-dialog" aria-labelledby="schedule-heading">
+    <div class="offer-header"><div><p class="cap">The rendezvous</p><h2 id="schedule-heading" class="serif">A time to meet.</h2></div><button id="close-schedule" class="device-icon" type="button" aria-label="Close appointment picker" autofocus>&times;</button></div>
+    <p class="form-note">Select your preferred date and time in 15-minute intervals. Both parties will confirm the plan. Philippine time · UTC+8.</p>
+    <div class="calendar-heading"><button id="previous-month" type="button" aria-label="Previous month">&lsaquo;</button><h3 id="calendar-month" aria-live="polite"></h3><button id="next-month" type="button" aria-label="Next month">&rsaquo;</button></div>
+    <div class="calendar-weekdays" aria-hidden="true"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+    <div id="calendar-days" class="calendar-days" role="group" aria-label="Choose a meeting date"></div>
+    <p class="cap booking-label">Your preferred time</p>
+    <div class="appointment-time">
+      <div><button id="hour-up" type="button" aria-label="Increase hour">+</button><output id="appointment-hour" aria-label="Hour">02</output><button id="hour-down" type="button" aria-label="Decrease hour">−</button></div>
+      <span aria-hidden="true">:</span>
+      <div><button id="minute-up" type="button" aria-label="Increase minutes by fifteen">+</button><output id="appointment-minute" aria-label="Minutes">00</output><button id="minute-down" type="button" aria-label="Decrease minutes by fifteen">−</button></div>
+      <button id="appointment-period" type="button" aria-label="Switch AM or PM">PM</button>
+    </div>
+    <p id="schedule-status" class="form-note" role="status" aria-live="polite">Choose a date to continue.</p>
+    <button id="save-schedule" class="btn fill" type="button">Confirm appointment time</button>
+  </dialog>
+  <script src="assets/demo.js"></script>
+</body>
+</html>

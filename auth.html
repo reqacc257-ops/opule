@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Opulé — Your account</title><link rel="stylesheet" href="assets/styles.css"></head>
+<body><main class="wrap section"><a class="brand" href="index.html">OPULÉ</a><h1 class="serif" style="margin:24px 0">Your account.</h1>
+<p class="form-note">Use sample details while testing. Never enter an ID or payment information.</p>
+<form id="account-form" style="max-width:460px;margin-top:24px">
+<label class="field"><span>Email</span><input id="email" type="email" maxlength="254" autocomplete="username" required></label>
+<label class="field"><span>Password (12–128 characters for a new account)</span><input id="password" type="password" maxlength="128" autocomplete="current-password" required></label>
+<label class="field"><span>Name (new accounts)</span><input id="name" type="text" maxlength="100" autocomplete="name"></label>
+<label class="field"><span>Account role (new accounts)</span><select id="role"><option value="buyer">Buyer</option><option value="seller">Seller</option></select></label>
+<label class="field"><span>General area (new accounts)</span><select id="area"></select></label>
+<div class="demo-actions"><button class="btn fill" type="submit" value="login">Sign in</button><button class="btn" type="submit" value="register">Create account</button><button id="logout" class="btn quiet" type="button">Sign out</button></div>
+<p id="account-status" class="form-note" role="status" style="margin-top:20px"></p>
+</form></main><script src="assets/app.js"></script><script src="assets/database.js"></script><script src="assets/auth.js"></script></body>
+</html>
