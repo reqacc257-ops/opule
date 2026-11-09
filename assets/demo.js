@@ -10,9 +10,12 @@
   var paused = false;
   var completed = false;
   var role = null;
+  var liveChat = new URLSearchParams(location.search).get('live') === '1';
   var demoBuyers = [];
   var selectedBuyer = demoBuyers[0];
   var conversationId = null;
+  var seenMessageIds = new Set();
+  var pollingMessages = false;
   var handoverId = null;
   var stateLoaded = false;
   var stateQueue = Promise.resolve();
@@ -539,7 +542,10 @@
       }
     }
     document.getElementById('chat-messages').replaceChildren();
-    (await OPULE.db.messagesFor(conversationId)).forEach(function (message) { drawMessage(message.text, message.senderId === (role === 'buyer' ? selectedBuyer.id : 'alex')); });
+    seenMessageIds.clear();
+    (await OPULE.db.messagesFor(conversationId)).forEach(function (message) {
+      drawMessage(message.text, message.senderId === (role === 'buyer' ? selectedBuyer.id : 'alex'), message.id);
+    });
     await loadStars();
     photoAwarded = !!(await OPULE.db.get('rewards', handoverId));
     stateLoaded = true;
@@ -696,10 +702,12 @@
   });
   async function addMessage(text, mine) {
     var senderId = mine ? (role === 'buyer' ? selectedBuyer.id : 'alex') : (role === 'buyer' ? 'alex' : selectedBuyer.id);
-    await OPULE.db.sendMessage(conversationId, senderId, text);
-    drawMessage(text, mine);
+    var message = await OPULE.db.sendMessage(conversationId, senderId, text);
+    drawMessage(message.text, mine, message.id);
   }
-  function drawMessage(text, mine) {
+  function drawMessage(text, mine, id) {
+    if (id && seenMessageIds.has(id)) return;
+    if (id) seenMessageIds.add(id);
     var message = document.createElement('p');
     message.className = 'chat-bubble ' + (mine ? 'chat-mine' : 'chat-theirs');
     message.textContent = text;
@@ -707,6 +715,17 @@
     log.appendChild(message);
     log.scrollTop = log.scrollHeight;
   }
+  async function refreshMessages() {
+    if (!liveChat || !role || !conversationId || !phoneDialog.open || document.hidden || pollingMessages) return;
+    pollingMessages = true;
+    try {
+      (await OPULE.db.messagesFor(conversationId)).forEach(function (message) {
+        drawMessage(message.text, message.senderId === (role === 'buyer' ? selectedBuyer.id : 'alex'), message.id);
+      });
+    } catch (error) { OPULE.db.report(error); }
+    finally { pollingMessages = false; }
+  }
+  window.setInterval(refreshMessages, 1500);
   function buyerSummary(buyer) {
     return buyer.name + ' · ' + buyer.area + ', Bulacan · member since ' + buyer.joined + ' · ' +
       buyer.transactions + ' completed demo transactions · ' + buyer.rating + ' · approx. ' + buyer.distanceKm +
@@ -800,6 +819,7 @@
     try {
     await addMessage(text, true);
     input.value = '';
+    if (liveChat) return;
     var reply;
     if (/condition|accessor|inspect/i.test(text)) {
       reply = role === 'buyer'
@@ -867,5 +887,10 @@
     deviceScroll.scrollTop = 0;
   });
   render();
-  roleDialog.showModal();
+  var requestedAccount = new URLSearchParams(location.search).get('account');
+  if (liveChat && (requestedAccount === 'jamie' || requestedAccount === 'alex')) {
+    chooseRole(requestedAccount === 'jamie' ? 'buyer' : 'seller').catch(OPULE.db.report);
+  } else {
+    roleDialog.showModal();
+  }
 })().catch(OPULE.db.report);

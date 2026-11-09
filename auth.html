@@ -11,5 +11,17 @@
 <label class="field"><span>General area (new accounts)</span><select id="area"></select></label>
 <div class="demo-actions"><button class="btn fill" type="submit" value="login">Sign in</button><button class="btn" type="submit" value="register">Create account</button><button id="logout" class="btn quiet" type="button">Sign out</button></div>
 <p id="account-status" class="form-note" role="status" style="margin-top:20px"></p>
-</form></main><script src="assets/app.js"></script><script src="assets/database.js"></script><script src="assets/auth.js"></script></body>
+</form>
+</main>
+<section id="test-accounts" class="wrap section" style="padding-top:0;max-width:980px" hidden>
+<hr class="rule">
+<p class="cap">Test accounts · demo only</p>
+<h2 class="serif" style="margin:12px 0">Chat between two test accounts.</h2>
+<p class="form-note" style="max-width:640px">Open Jamie and Alex in separate browser profiles (for example, your regular window and a private window) to keep their sign-ins separate. Messages sync through the local demo server. No real accounts or payments are involved.</p>
+<div class="demo-actions" style="margin-top:20px">
+<button class="btn fill" type="button" data-demo-account="jamie">Open Jamie · Buyer</button>
+<button class="btn" type="button" data-demo-account="alex">Open Alex · Seller</button>
+</div>
+</section>
+<script src="assets/app.js"></script><script src="assets/database.js"></script><script src="assets/auth.js"></script></body>
 </html>

@@ -21,7 +21,13 @@
       headers: body === undefined ? {} : { 'Content-Type': 'application/json' },
       body: body === undefined ? undefined : JSON.stringify(body)
     });
-    var value = await response.json();
+    var responseText = await response.text();
+    var value;
+    try { value = JSON.parse(responseText); }
+    catch (error) {
+      if (!(error instanceof SyntaxError)) throw error;
+      throw new Error('The Opulé API returned a non-JSON response (HTTP ' + response.status + '). The API endpoint is missing or unavailable.');
+    }
     if (!response.ok) throw new Error(value.error || 'The server rejected this operation');
     return value;
   }
