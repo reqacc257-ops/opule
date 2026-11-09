@@ -13,6 +13,24 @@ The site now needs the Node.js server, not `file://` URLs. Install Node 24 LTS a
 
 Windows local bootstrap is optional: set `PG_BIN` to the installed PostgreSQL `bin` directory, run `node server/setup.js initialize`, start `postgres -D data\postgres -h 127.0.0.1 -p 55432`, then run `node server/setup.js configure`. This generates a private `.env` and a non-superuser application role without printing passwords. The cluster stays in `data\postgres`.
 
+## Vercel deployment
+
+Deploy from the repository root. [vercel.json](vercel.json) runs `npm run build`, publishes only the HTML pages and assets from `dist`, and routes **all** `/api/*` requests to [api/index.js](api/index.js). The function uses the same Express routes and PostgreSQL storage as the local server, without starting a separate listener.
+
+Set these environment variables in the Vercel project **before redeploying**:
+
+- `NODE_ENV=production`
+- `APP_ORIGIN=https://opule-2f65.vercel.app` (replace with your actual public domain; no trailing slash)
+- `DATABASE_URL`: your hosted PostgreSQL connection string
+- `DATABASE_TLS=true`
+- `DATA_ENCRYPTION_KEY`: your existing 64-character hexadecimal encryption key, or a newly generated key for a new database
+- `ENABLE_DEMO=false`
+- `DATABASE_CA_FILE`, only if the database requires a custom trusted CA. Include that certificate in the function bundle; never publish it in `assets`.
+
+The database must be reachable from Vercel and the configured role must be able to initialize the schema. Keep existing encryption keys when reusing a database. A local PostgreSQL URL will not work on Vercel.
+
+After deployment, check `/api/health` for `{"ok":true}`, `/api/bootstrap` for JSON, and `/assets/styles.css` for CSS. Missing configuration or a failed database connection returns JSON with HTTP 503 and logs the startup failure, rather than a platform HTML/text 404. Frontend changes alone cannot provision a database or configure deployment secrets.
+
 ## Data model
 
 - `users`: accounts, salted scrypt password hashes, keyed email lookup.

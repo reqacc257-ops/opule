@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "node server/build-static.js",
     "start": "node --env-file=.env server/index.js",
     "test": "node --test server/test/*.test.js"
   },

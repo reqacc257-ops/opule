@@ -15,6 +15,7 @@ function text(value, max = 400) { return typeof value === 'string' && value.trim
 export function createApp(db, config) {
   const app = express();
   app.disable('x-powered-by');
+  if (config.vercel) app.set('trust proxy', 1);
   const production = config.production;
   const demoAllowed = config.demo && !production;
   const cookieName = production ? '__Host-opule' : 'opule_session';
@@ -34,7 +35,10 @@ export function createApp(db, config) {
       upgradeInsecureRequests: production ? [] : null
     } }
   }));
-  app.use('/api', rateLimit({ windowMs: 60_000, limit: 300, standardHeaders: 'draft-8', legacyHeaders: false }));
+  function rateLimitResponse(req, res) {
+    res.set('Cache-Control', 'no-store').status(429).json({ error: 'Too many requests. Please wait and try again.' });
+  }
+  app.use('/api', rateLimit({ windowMs: 60_000, limit: 300, standardHeaders: 'draft-8', legacyHeaders: false, handler: rateLimitResponse }));
   app.use(express.json({ limit: '32kb' }));
   app.use('/api', async (req, res, next) => {
     try {
@@ -65,7 +69,7 @@ export function createApp(db, config) {
   app.get('/api/bootstrap', async (req, res) => {
     res.json({ listings: await db.all('listings'), venues: await db.all('venues'), user: req.user || null, demoEnabled: demoAllowed });
   });
-  const authLimit = rateLimit({ windowMs: 15 * 60_000, limit: 15, standardHeaders: 'draft-8', legacyHeaders: false });
+  const authLimit = rateLimit({ windowMs: 15 * 60_000, limit: 15, standardHeaders: 'draft-8', legacyHeaders: false, handler: rateLimitResponse });
   app.post('/api/auth/register', authLimit, async (req, res) => {
     const { name, email, password, role, area } = req.body;
     requireValue(text(name, 100) && typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254 && ['buyer', 'seller'].includes(role) && config.areas.includes(area), 'Enter valid account details');
@@ -205,6 +209,7 @@ export function createApp(db, config) {
     if (res.headersSent) return next(error);
     const status = error.status || 500;
     console.error('Request failed:', req.method, req.path, status, error.code || error.name);
+    res.set('Cache-Control', 'no-store');
     res.status(status).json({ error: status >= 500 ? 'Server could not complete this operation' : error.message });
   });
   return app;
