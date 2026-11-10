@@ -3,111 +3,90 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Opulé — The luxury resale app</title>
-<meta name="description" content="Discover the Opulé mobile app: buy and sell verified luxury pieces with secure, in-person handovers.">
+<title>Opulé — Discover exceptional pieces</title>
+<meta name="description" content="Explore luxury resale in the Philippines. Discover bags, watches, jewelry, and thoughtfully planned handovers with Opulé.">
 <link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/marketplace.css">
 <script src="assets/loading.js" defer></script>
 </head>
-<body>
-
-<div class="wrap">
-  <header class="site">
-    <a class="brand" href="index.html">OPULÉ</a>
-    <nav class="site">
-      <a href="index.html#browse" class="active">Browse</a>
-      <a href="index.html#how">How it works</a>
-      <a href="sell.html">Sell</a>
-      <a href="register.html">Become a seller</a>
-      <a href="auth.html">Your account</a>
+<body class="marketplace-page">
+<header class="market-header">
+  <a class="brand" href="index.html">OPULÉ</a>
+  <nav aria-label="Main navigation">
+    <a href="index.html" aria-current="page">Discover</a>
+    <a href="sell.html">Seller studio</a>
+    <a href="auth.html" id="market-account">Your account</a>
+  </nav>
+  <span class="market-edition">THE PHILIPPINE EDIT</span>
+</header>
+<div class="market-layout">
+  <aside class="market-sidebar" aria-label="Marketplace filters">
+    <p class="cap">Your next discovery</p>
+    <h1 class="serif">The collection.</h1>
+    <nav class="workspace-nav" aria-label="Buyer navigation">
+      <a href="#edit" aria-current="location">The private edit</a>
+      <a href="#browse"><span aria-hidden="true">01</span> Browse the collection</a>
+      <a href="auth.html" id="buyer-chat"><span aria-hidden="true">02</span> Sample inbox &amp; handovers</a>
+      <a href="#how"><span aria-hidden="true">03</span> The Opulé approach</a>
     </nav>
-  </header>
+    <div id="buyer-refinements" hidden>
+    <label class="field market-search"><span>Search pieces</span><input id="market-search" type="search" placeholder="Designer, piece, detail..." autocomplete="off"></label>
+    <details class="market-refine" id="market-refine" open>
+    <summary>Refine your selection</summary>
+    <form id="market-filters">
+      <fieldset class="category-filter">
+        <legend class="cap">Categories</legend>
+        <label><input type="radio" name="category" value="" checked>All pieces</label>
+        <label><input type="radio" name="category" value="Bags">Bags</label>
+        <label><input type="radio" name="category" value="Watches">Watches</label>
+        <label><input type="radio" name="category" value="Jewelry">Jewelry</label>
+        <label><input type="radio" name="category" value="Sneakers">Sneakers</label>
+        <label><input type="radio" name="category" value="Accessories">Accessories</label>
+        <label><input type="radio" name="category" value="Other">Other</label>
+      </fieldset>
+      <label class="field"><span>General area</span><select id="market-area"><option value="">All areas</option></select></label>
+      <label class="field"><span>Maximum price · PHP</span><input id="market-price" type="number" min="0" step="1000" placeholder="No limit"></label>
+      <button class="btn quiet" type="reset">Reset filters</button>
+    </form>
+    </details>
+    </div>
+    <div class="sidebar-note"><p class="cap">Considered exchanges</p><p>Explore first. Discuss the piece, agree on a public meeting place, and inspect before accepting.</p><a href="sell.html">Give a piece its next chapter →</a></div>
+  </aside>
+  <main class="market-main" id="buyer-root">
+    <section data-page-view="edit" id="edit">
+    <section class="collection-banner" aria-labelledby="collection-heading">
+      <div class="collection-story"><p class="cap">The art of a second chapter</p><h2 id="collection-heading">Exceptional,<br>again.</h2><p>Distinctive pieces. New perspectives.<br>A collection to make your own.</p><a class="collection-link" href="#collection-selection">Explore the collection</a></div>
+      <figure class="collection-editorial"><img src="assets/images/handbag.jpg" width="900" height="600" alt="Illustrative sculptural handbag with a gold handle"><figcaption>Illustrative stock photography · not an offered piece</figcaption></figure>
+    </section>
+    </section>
+    <section data-page-view="browse" id="browse" hidden>
+    <div class="collection-toolbar" id="collection-selection">
+      <div><h2>The collection</h2><p id="listing-count" role="status" aria-live="polite">Loading the collection...</p></div>
+      <label class="field"><span>Sort by</span><select id="market-sort"><option value="curated">Curated order</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="title">Name: A to Z</option></select></label>
+    </div>
+    <p class="catalog-disclosure">Market samples are not Opulé offers. Stock images are illustrative, not the exact pieces. Reference data: <a href="https://theorangebox.ph/collections/all" target="_blank" rel="noopener noreferrer">The Orange Box PH</a>. Prices and availability may change.</p>
+    <div id="ledger" class="catalog-grid" aria-busy="false" aria-label="Collection listings">
+      <div class="catalog-placeholder skeleton" aria-hidden="true"></div><div class="catalog-placeholder skeleton" aria-hidden="true"></div><div class="catalog-placeholder skeleton" aria-hidden="true"></div>
+    </div>
+    <section class="market-empty" id="market-empty" hidden><p class="cap">A little more room to discover</p><h2 class="serif">No pieces match this search.</h2><p>Try a different designer, category, area, or price.</p><button id="empty-reset" class="btn" type="button">View all pieces</button></section>
+    </section>
+    <section data-page-view="approach" class="market-approach" id="how" hidden>
+      <p class="cap">Considered exchanges</p><h2>The Opulé approach</h2>
+      <div class="approach-grid">
+        <div><p class="cap">01 · Know the seller</p><p>Sellers apply for identity and video-call review before listing. Review takes at least two days.</p></div>
+        <div><p class="cap">02 · A clear price</p><p>Discuss condition and accessories in chat. Agree on the price and meeting intent together.</p></div>
+        <div><p class="cap">03 · Meet thoughtfully</p><p>Choose and confirm a public venue together. Check its branch, opening hours, and seating.</p></div>
+        <div><p class="cap">04 · Inspect in person</p><p>Inspect before accepting. The sample handover is a simulation, not real escrow or payment.</p></div>
+      </div>
+      <a class="btn" href="#browse">Back to the collection</a>
+    </section>
+    <footer class="market-footer"><span class="brand">OPULÉ</span><p>Luxury resale, thoughtfully considered. Philippines.</p><a href="auth.html">Explore the sample accounts →</a></footer>
+  </main>
 </div>
-
-<section class="wrap section app-hero">
-  <div class="two-col app-hero-grid">
-    <div>
-      <p class="cap app-eyebrow">The Opulé app · Philippines</p>
-      <h1 class="serif app-headline">Luxury, with a safer way to meet.</h1>
-      <p class="app-intro">Find your next exceptional piece and make the exchange with confidence. Opulé brings verified sellers, clear prices, and thoughtfully planned handovers together in one app.</p>
-      <div class="app-actions">
-        <a class="btn fill" href="demo.html">Test the app</a>
-        <a class="btn" href="#how">Discover the app</a>
-        <a class="btn" href="#browse">Browse listings</a>
-      </div>
-      <p class="app-availability">A more considered way to buy and sell luxury.</p>
-    </div>
-    <div class="app-visual" role="img" aria-label="Preview of the Opulé mobile app">
-      <div class="app-visual-copy">
-        <span class="cap">Meet the app</span>
-        <p class="serif">Every detail, thoughtfully handled.</p>
-      </div>
-      <div class="phone">
-        <div class="phone-screen">
-          <div class="phone-status"><span>9:41</span><span>●●● &nbsp; ◖</span></div>
-          <div class="phone-brand">OPULÉ <span>•••</span></div>
-          <p class="cap phone-label">Sample handover · demo only</p>
-          <p class="serif phone-item">Hermès Roulis 23 Beton Evercolor GHW</p>
-          <p class="phone-price">₱282,000 <span>· PH market sample</span></p>
-          <div class="phone-divider"></div>
-          <div class="phone-check"><span class="phone-check-icon">✓</span><span><b>Identity check</b><small>Demo verification state</small></span></div>
-          <div class="phone-check"><span class="phone-check-icon">✓</span><span><b>Meet halfway</b><small>Demo meetup suggestion</small></span></div>
-          <div class="phone-meeting"><span class="cap">MEETING POINT</span><b>RICH Bistro, Baliwag</b><small>Sample meetup · A Square</small></div>
-          <div class="phone-confirm">Confirm handover <span>→</span></div>
-        </div>
-      </div>
-      <div class="app-note"><span class="app-note-mark">✦</span><span><b>Confidence at every step</b><small>From verified profiles to the final handover.</small></span></div>
-    </div>
-  </div>
-</section>
-
-<section class="wrap section" id="browse">
-  <div style="display:flex;justify-content:space-between;align-items:baseline">
-    <h2 class="display serif">Philippine market samples</h2>
-    <span class="cap" style="color:var(--ink)" id="listing-count"></span>
-  </div>
-  <p class="market-sample-note">Demo data based on examples shown by <a href="https://theorangebox.ph/collections/all" target="_blank" rel="noopener noreferrer">The Orange Box PH</a>. Images are illustrative stock photos, not photos of these exact items. Sample prices and availability may change; these are not Opulé listings.</p>
-  <div class="ledger" id="ledger" style="margin-top:32px" aria-busy="true" aria-label="Market sample listings">
-    <div class="skeleton-list" aria-hidden="true"><div class="skeleton-row"><span class="skeleton skeleton-thumb"></span><div><span class="skeleton skeleton-line"></span><span class="skeleton skeleton-line short"></span></div><span class="skeleton skeleton-price"></span></div><div class="skeleton-row"><span class="skeleton skeleton-thumb"></span><div><span class="skeleton skeleton-line"></span><span class="skeleton skeleton-line short"></span></div><span class="skeleton skeleton-price"></span></div><div class="skeleton-row"><span class="skeleton skeleton-thumb"></span><div><span class="skeleton skeleton-line"></span><span class="skeleton skeleton-line short"></span></div><span class="skeleton skeleton-price"></span></div></div>
-  </div>
-</section>
-
-<section class="wrap section" id="how">
-  <h2 class="display serif" style="max-width:640px">Four steps between a listing and a handshake.</h2>
-  <div class="steps" style="margin-top:56px">
-    <div>
-      <div class="n serif">1</div>
-      <h3>Sellers verify first</h3>
-      <p>Government ID, a video call with our staff, and a few questions. Review takes a minimum of two days.</p>
-    </div>
-    <div>
-      <div class="n serif">2</div>
-      <h3>Items list at a price</h3>
-      <p>No bidding, no haggling in public. The price you see is the price on the record.</p>
-    </div>
-    <div>
-      <div class="n serif">3</div>
-      <h3>Meet halfway</h3>
-      <p>Tell us your general area. We suggest a vetted spot roughly midway between you and the seller.</p>
-    </div>
-    <div>
-      <div class="n serif">4</div>
-      <h3>Confirm and release</h3>
-      <p>When you are both at the spot, the app asks each of you to confirm the other. Then money moves.</p>
-    </div>
-  </div>
-</section>
-
-<footer class="site">
-  <div class="wrap">
-    <span class="brand" style="font-size:20px">OPULÉ</span>
-    <span class="fine">Verified luxury resale, Philippines</span>
-    <span class="fine"><a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Contact</a></span>
-  </div>
-</footer>
-
 <script src="assets/app.js"></script>
+<script src="assets/navigation.js"></script>
 <script src="assets/database.js"></script>
+<script src="assets/marketplace.js"></script>
 <script src="assets/index-page.js"></script>
-
 </body>
 </html>

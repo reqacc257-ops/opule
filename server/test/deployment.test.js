@@ -88,7 +88,9 @@ test('hosted sample accounts sign in securely and cannot change the real catalog
   const invalid = await fetch(origin + '/api/demo/login', { method: 'POST', headers, body: JSON.stringify({ id: 'real' }) });
   assert.equal(invalid.status, 400);
   const bootstrap = await fetch(origin + '/api/bootstrap');
-  assert.equal((await bootstrap.json()).demoEnabled, true);
+  const capabilities = await bootstrap.json();
+  assert.equal(capabilities.demoEnabled, true);
+  assert.equal(capabilities.localDemoEnabled, false);
   const authenticated = { ...headers, Cookie: '__Host-opule=test-token' };
   for (const [path, method] of [['/api/listings', 'POST'], ['/api/seller', 'PUT'], ['/api/seller', 'DELETE']]) {
     const response = await fetch(origin + path, { method, headers: authenticated, body: '{}' });
@@ -103,6 +105,20 @@ test('hosted sample accounts sign in securely and cannot change the real catalog
   currentUser = 'real';
   const realUser = await fetch(origin + '/api/handovers/test', { method: 'PUT', headers: authenticated, body: JSON.stringify(handover) });
   assert.equal(realUser.status, 403);
+});
+
+test('seller review controls are advertised only to local development demo requests', async t => {
+  for (const [production, demo, expected] of [[false, true, true], [false, false, false], [true, true, false]]) {
+    const app = createApp({ all: async () => [] }, {
+      root, origin: 'http://localhost:3000', production, demo,
+      sampleAccounts: true, key: 'a'.repeat(64), areas: ['baliwag']
+    });
+    const server = app.listen(0, '127.0.0.1');
+    await new Promise(resolve => server.once('listening', resolve));
+    t.after(() => new Promise(resolve => server.close(resolve)));
+    const response = await fetch(`http://127.0.0.1:${server.address().port}/api/bootstrap`);
+    assert.equal((await response.json()).localDemoEnabled, expected);
+  }
 });
 
 test('Vercel builds only public pages and assets and routes every API path to the shared function', async () => {
@@ -215,7 +231,7 @@ test('API routes serve JSON, protect private operations, and serve CSS without e
     assert.equal(response.headers.get('cache-control'), 'no-store');
     const body = await response.json();
     if (path.endsWith('health')) assert.deepEqual(body, { ok: true });
-    else assert.deepEqual(body, { listings: [], venues: [], user: null, demoEnabled: false });
+    else assert.deepEqual(body, { listings: [], venues: [], user: null, demoEnabled: false, localDemoEnabled: false });
   }
   for (const path of ['/api/records/sellers', '/api/messages/alex-jamie-L1']) {
     const response = await fetch(origin + path);

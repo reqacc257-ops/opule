@@ -44,6 +44,7 @@
     }
     OPULE.SPOTS.splice.apply(OPULE.SPOTS, [0, OPULE.SPOTS.length].concat(data.venues));
     OPULE.demoEnabled = data.demoEnabled;
+    OPULE.localDemoEnabled = data.localDemoEnabled === true;
   }
   OPULE.ready = initialize();
   OPULE.ready.catch(report);

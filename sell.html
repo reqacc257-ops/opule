@@ -3,37 +3,41 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Opulé — Sell</title>
+<title>Opulé — Seller studio</title>
 <link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/marketplace.css">
+<link rel="stylesheet" href="assets/seller-studio.css">
+<script src="assets/loading.js" defer></script>
 </head>
-<body>
-
-<div class="wrap">
-  <header class="site">
-    <a class="brand" href="index.html">OPULÉ</a>
-    <nav class="site">
-      <a href="index.html#browse">Browse</a>
-      <a href="index.html#how">How it works</a>
-      <a href="sell.html" class="active">Sell</a>
-      <a href="register.html">Become a seller</a>
+<body class="marketplace-page seller-page">
+<header class="market-header">
+  <a class="brand" href="index.html">OPULÉ</a>
+  <nav aria-label="Main navigation"><a href="index.html">Discover</a><a href="sell.html" aria-current="page">Seller studio</a><a href="auth.html">Your account</a></nav>
+  <span class="market-edition">THE SELLER'S EDIT</span>
+</header>
+<div class="market-layout">
+  <aside class="market-sidebar studio-sidebar" aria-label="Seller navigation">
+    <div class="studio-sidebar-heading"><span class="studio-sidebar-seal" aria-hidden="true">O</span><p class="cap">The private edit</p><h2>Seller studio</h2><p>Your collection. Beautifully managed.</p></div>
+    <nav class="workspace-nav" aria-label="Studio sections">
+      <a href="#sell-root" aria-current="location"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></svg><span class="studio-nav-label">Overview<small>Your studio at a glance</small></span><span class="studio-nav-arrow" aria-hidden="true">↗</span></a>
+      <a href="#studio-listings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l1 12H4L5 8Z"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/></svg><span class="studio-nav-label">Collection<small>The pieces in your care</small></span><span class="studio-nav-arrow" aria-hidden="true">↗</span></a>
+      <a href="#studio-enquiries"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v12H9l-5 3V5Z"/><path d="M8 9h8M8 13h5"/></svg><span class="studio-nav-label">Correspondence<small>Enquiries &amp; handovers</small></span><span class="studio-nav-arrow" aria-hidden="true">↗</span></a>
+      <a href="register.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10v18H7zM10 8h4M10 12h4M10 16h2"/></svg><span class="studio-nav-label">Application<small>Your seller profile</small></span><span class="studio-nav-arrow" aria-hidden="true">↗</span></a>
     </nav>
-  </header>
+    <a class="btn quiet" href="index.html">Explore the marketplace</a>
+    <div class="sidebar-note"><p class="cap">The Opulé standard</p><p>Exceptional pieces.<br>Considered exchanges.</p><span class="studio-sidebar-signature">OPULÉ / PHILIPPINES</span></div>
+  </aside>
+  <main class="market-main" id="sell-root">
+    <div class="skeleton skeleton-title" aria-hidden="true"></div>
+    <p class="form-note" role="status">Preparing your studio...</p>
+  </main>
 </div>
 
-<section class="wrap section" id="sell-root" style="padding-top:72px">
-  <!-- filled by script -->
-</section>
-
-<footer class="site">
-  <div class="wrap">
-    <span class="brand" style="font-size:20px">OPULÉ</span>
-    <span class="fine">Verified luxury resale, Philippines</span>
-    <span class="fine"><a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Contact</a></span>
-  </div>
-</footer>
-
 <script src="assets/app.js"></script>
+<script src="assets/navigation.js"></script>
 <script src="assets/database.js"></script>
+<script src="assets/marketplace.js"></script>
+<script src="assets/seller-studio.js"></script>
 <script src="assets/sell-page.js"></script>
 
 </body>

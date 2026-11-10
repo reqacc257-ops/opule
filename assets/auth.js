@@ -10,6 +10,23 @@
   var status = document.getElementById('account-status');
   var user = OPULE.getUser();
   if (user) status.textContent = 'Signed in as ' + user.name;
+  document.getElementById('logout').hidden = !user;
+  OPULE.initPageNavigation({
+    root: document.getElementById('account-form'), nav: document.getElementById('account-modes'),
+    defaultHash: '#sign-in', routes: { '#sign-in': 'login', '#create-account': 'register' },
+    onChange: function (view) {
+      var creating = view === 'register';
+      var submit = document.getElementById('account-submit');
+      submit.value = creating ? 'register' : 'login';
+      submit.textContent = creating ? 'Create account' : 'Sign in';
+      document.getElementById('password').autocomplete = creating ? 'new-password' : 'current-password';
+      document.getElementById('password').minLength = creating ? 12 : 0;
+      document.getElementById('name').required = creating;
+      document.getElementById('name').disabled = !creating;
+      document.getElementById('role').disabled = !creating;
+      document.getElementById('area').disabled = !creating;
+    }
+  });
   var testAccounts = document.getElementById('test-accounts');
   if (OPULE.demoEnabled) {
     sampleStatus.textContent = 'Ready to use. Choose a buyer or seller account above.';
@@ -21,7 +38,7 @@
         try {
           var account = button.dataset.demoAccount;
           await OPULE.db.loginDemo(account);
-          location.assign('demo.html?account=' + encodeURIComponent(account) + '&live=1');
+          location.assign(account === 'alex' ? 'sell.html' : 'index.html');
         } catch (error) {
           sampleStatus.textContent = error.message;
           testAccounts.querySelectorAll('button').forEach(function (item) { item.disabled = false; });
@@ -43,7 +60,7 @@
       var result = await OPULE.db.api('auth/' + action, 'POST', body);
       document.getElementById('password').value = '';
       status.textContent = 'Signed in as ' + result.user.name;
-      location.assign(result.user.role === 'seller' ? 'register.html' : 'index.html');
+      location.assign(result.user.role === 'seller' ? 'sell.html' : 'index.html');
     } catch (error) { status.textContent = error.message; }
     finally { event.submitter.disabled = false; }
   });

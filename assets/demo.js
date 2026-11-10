@@ -60,6 +60,18 @@
   var photoKind = 'selfie';
   var stars = 0;
   var rewardError = '';
+  var handoverView = null;
+  var lastHandoverStep = null;
+  var progress = document.querySelector('.demo-progress');
+  OPULE.initNavigationIndicator(progress);
+  progress.addEventListener('click', function (event) {
+    var button = event.target.closest('button[data-handover-view]');
+    if (!button || button.disabled) return;
+    handoverView = button.dataset.handoverView;
+    render();
+    deviceScroll.scrollTop = 0;
+  });
+  document.getElementById('restart-handover').addEventListener('click', function () { document.getElementById('reset').click(); });
   async function loadStars() {
     stars = (await OPULE.db.all('rewards')).filter(function (entry) { return entry.userId === selectedBuyer.id; })
       .reduce(function (total, entry) { return total + entry.stars; }, 0);
@@ -332,7 +344,30 @@
       ? '₱282,000 · simulated funds released (no money moved)'
       : planAgreed() ? '₱282,000 · simulated funds held' : '₱282,000 · awaiting agreement; no funds held';
     status.classList.toggle('is-complete', completed);
-    var activeStep = completed ? null : !nearby ? 'step-arrive' : !bothConfirmed ? 'step-verify' : 'step-release';
+    var stage = !nearby ? 'arrive' : !bothConfirmed ? 'verify' : 'release';
+    var showingHandover = planAgreed() && !completed;
+    if (stage !== lastHandoverStep || !handoverView) {
+      handoverView = stage;
+      lastHandoverStep = stage;
+      if (showingHandover) deviceScroll.scrollTop = 0;
+    }
+    status.hidden = !showingHandover;
+    document.getElementById('restart-handover').hidden = !showingHandover || handoverView === 'arrive';
+    document.querySelectorAll('[data-handover-panel]').forEach(function (panel) {
+      var hidden = !showingHandover || panel.dataset.handoverPanel !== handoverView;
+      var entering = panel.hidden && !hidden;
+      panel.hidden = hidden;
+      if (entering && phoneDialog.open) {
+        var heading = panel.querySelector('h2') || panel.querySelector('.cap');
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+      }
+    });
+    document.querySelectorAll('[data-handover-view]').forEach(function (button) {
+      button.disabled = !showingHandover || (button.dataset.handoverView === 'verify' && !nearby) ||
+        (button.dataset.handoverView === 'release' && (!nearby || !bothConfirmed));
+    });
+    var activeStep = completed ? null : 'step-' + handoverView;
     ['step-arrive', 'step-verify', 'step-release'].forEach(function (id) {
       var step = document.getElementById(id);
       if (id === activeStep) step.setAttribute('aria-current', 'step');
@@ -361,7 +396,7 @@
     if (!planAgreed() || paused || completed) return;
     distance.value = '12';
     render();
-    document.querySelector('.demo-confirmation').scrollIntoView({ block: 'start' });
+    deviceScroll.scrollTop = 0;
   });
   confirmSeller.addEventListener('click', function () {
     if (role !== 'buyer' || !isNearby() || paused || completed) return;
@@ -383,7 +418,7 @@
     if (role === 'buyer' && sellerConfirmed) buyerConfirmed = true;
     else if (role === 'seller' && buyerConfirmed) sellerConfirmed = true;
     render();
-    document.querySelector('.demo-transaction').scrollIntoView({ block: 'start' });
+    deviceScroll.scrollTop = 0;
   });
   document.getElementById('mismatch').addEventListener('click', function () {
     clearConfirmations();
@@ -501,14 +536,15 @@
     render();
     deviceScroll.scrollTop = 0;
   });
-  async function chooseRole(chosenRole) {
+  async function chooseRole(chosenRole, buyerId) {
     await stateQueue;
     await OPULE.db.loginDemo(chosenRole === 'buyer' ? 'jamie' : 'alex');
     demoBuyers = (await OPULE.db.all('users')).filter(function (user) { return user.role === 'buyer' && user.firstName; });
     resetAgreement();
     document.getElementById('simulation-summary').hidden = true;
     role = chosenRole;
-    selectedBuyer = demoBuyers.find(function (buyer) { return buyer.id === 'jamie'; });
+    selectedBuyer = demoBuyers.find(function (buyer) { return buyer.id === (chosenRole === 'seller' && buyerId ? buyerId : 'jamie'); });
+    if (!selectedBuyer) throw new Error('This sample buyer is unavailable. Return to the seller studio and choose another enquiry.');
     sellerInboxOpen = false;
     clearBuyerFilters();
     clearConfirmations();
@@ -926,7 +962,7 @@
   render();
   var requestedAccount = new URLSearchParams(location.search).get('account');
   if (liveChat && (requestedAccount === 'jamie' || requestedAccount === 'alex')) {
-    chooseRole(requestedAccount === 'jamie' ? 'buyer' : 'seller').catch(OPULE.db.report);
+    chooseRole(requestedAccount === 'jamie' ? 'buyer' : 'seller', new URLSearchParams(location.search).get('buyer')).catch(OPULE.db.report);
   } else {
     roleDialog.showModal();
   }

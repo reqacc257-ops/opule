@@ -53,9 +53,11 @@ export function createApp(db, config) {
     } catch (error) { next(error); }
   });
   function authenticate(req) { requireValue(req.user, 'Sign in to access your account', 401); }
+  function localDemo(req) {
+    return Boolean(localDemoAllowed && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress));
+  }
   function demo(req) {
-    const local = localDemoAllowed && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress);
-    requireValue(local || (config.sampleAccounts && req.user?.demo === true), 'Demo controls are disabled', 403);
+    requireValue(localDemo(req) || (config.sampleAccounts && req.user?.demo === true), 'Demo controls are disabled', 403);
   }
   async function participant(req, id) {
     authenticate(req);
@@ -65,7 +67,7 @@ export function createApp(db, config) {
     return row;
   }
   app.get('/api/bootstrap', async (req, res) => {
-    res.json({ listings: await db.all('listings'), venues: await db.all('venues'), user: req.user || null, demoEnabled: demoAllowed });
+    res.json({ listings: await db.all('listings'), venues: await db.all('venues'), user: req.user || null, demoEnabled: demoAllowed, localDemoEnabled: localDemo(req) });
   });
   const authLimit = rateLimit({ windowMs: 15 * 60_000, limit: 15, standardHeaders: 'draft-8', legacyHeaders: false, handler: rateLimitResponse });
   app.post('/api/auth/register', authLimit, async (req, res) => {

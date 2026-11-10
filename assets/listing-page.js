@@ -37,15 +37,16 @@
   root.innerHTML =
     sourceLink +
     '<div class="two-col">' +
-      '<div>' +
+      '<div class="listing-gallery">' + sampleImage + '</div>' +
+      '<div class="listing-information">' +
         '<p class="cap">' + OPULE.esc(listing.category || 'Listing') + '</p>' +
         '<h1 class="display serif listing-title">' + OPULE.esc(listing.title) + '</h1>' +
         '<p class="serif listing-price">' + OPULE.peso(listing.price) + '</p>' +
         '<p class="listing-note">' + (isSample
           ? 'Reference price shown on the source site when sampled; this is not an Opulé offer.'
           : 'Listed price. Held in escrow until you both confirm the handover.') + '</p>' +
-        '<div style="margin-top:36px">' + sampleImage + '</div>' +
-        '<hr class="rule" style="margin-top:36px">' +
+        '<nav class="view-nav" id="listing-navigation" aria-label="Listing information"><a href="#details" aria-current="location">Piece details</a><a href="#exchange">Chat &amp; handover</a></nav>' +
+        '<section data-page-view="details">' +
         '<dl class="facts">' +
           '<dt>Details</dt><dd>' + OPULE.esc(listing.meta || '—') + '</dd>' +
           '<dt>Condition</dt><dd>' + OPULE.esc(listing.condition || '—') + '</dd>' +
@@ -54,10 +55,8 @@
             : 'ID checked · video verified') + '</dd>' +
           '<dt>' + (isSample ? 'Test area' : 'Area') + '</dt><dd>' + (sellerArea ? OPULE.esc(sellerArea.name) : '—') +
             (isSample ? ' (simulated for testing)' : ' (general area only — exact address is never shown)') + '</dd>' +
-        '</dl>' +
-      '</div>' +
-      '<div>' +
-        '<div class="panel">' +
+        '</dl></section>' +
+        '<section data-page-view="exchange" hidden><div class="panel">' +
           '<div class="head"><span class="cap">Chat before choosing a place</span></div>' +
           '<p>' + (isSample
             ? 'Buyers open a messaging-style chat; sellers can filter sample buyers by transaction history, approximate distance, and verification. Agree on the price and meeting intent first, then choose an Opulé suggestion or propose your own public venue.'
@@ -73,10 +72,15 @@
               '<p class="cap" style="margin-bottom:12px">Message the seller</p>' +
               '<p>Chat opens after you sign in with a verified mobile number. Payment stays in escrow — agree on the meetup in chat, not on the price.</p>' +
               '<button id="sign-in-chat" class="btn quiet" type="button" style="margin-top:16px">Sign in to chat</button>' +
-            '</div>') +
+            '</div>') + '</section>' +
       '</div>' +
     '</div>';
 
+  OPULE.initPageNavigation({
+    root: document.querySelector('.listing-information'), nav: document.getElementById('listing-navigation'),
+    scrollTarget: document.getElementById('listing-navigation'),
+    defaultHash: '#details', routes: { '#details': 'details', '#exchange': 'exchange' }
+  });
   var signInChat = document.getElementById('sign-in-chat');
   if (signInChat) signInChat.addEventListener('click', function () {
     alert('Sign-in and chat are not part of this mock yet.');

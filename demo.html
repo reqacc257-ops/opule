@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="assets/demo.css">
   <script src="assets/loading.js" defer></script>
 </head>
-<body>
+<body class="handover-page">
   <dialog id="role-dialog" class="role-dialog" aria-labelledby="role-heading">
     <p class="cap">Test the app</p>
     <h2 id="role-heading" class="serif">Choose your demo account.</h2>
@@ -98,14 +98,15 @@
       <p id="venue-status" class="handover-status" role="status" aria-live="polite">Select a place and time. Both people must confirm the same plan.</p>
     </section>
     <p id="agreement-summary" class="handover-status" hidden></p>
-    <ol class="demo-progress" aria-label="Handover steps">
-      <li id="step-arrive" aria-current="step">1. Meet nearby</li>
-      <li id="step-verify">2. Check each other</li>
-      <li id="step-release">3. Inspect &amp; hand over</li>
+    <ol class="demo-progress form-progress" aria-label="Handover steps">
+      <li id="step-arrive" aria-current="step"><button type="button" data-handover-view="arrive">1. Meet nearby</button></li>
+      <li id="step-verify"><button type="button" data-handover-view="verify">2. Check each other</button></li>
+      <li id="step-release"><button type="button" data-handover-view="release">3. Inspect &amp; hand over</button></li>
     </ol>
 
+    <div id="handover-status" class="handover-status" role="status" aria-live="polite" aria-atomic="true" hidden>Waiting for the buyer to enter the meeting zone.</div>
     <div class="demo-grid">
-      <section class="panel demo-location" aria-labelledby="location-heading">
+      <section class="panel demo-location" data-handover-panel="arrive" aria-labelledby="location-heading">
         <p class="cap">Simulated live location</p>
         <h2 id="location-heading" class="serif">Meet at RICH Bistro, Baliwag</h2>
         <p id="location-note" class="form-note">Illustrative venue only; no meetup is being arranged.</p>
@@ -148,10 +149,9 @@
         </details>
       </section>
 
-      <section class="panel demo-confirmation" aria-labelledby="confirmation-heading">
+      <section class="panel demo-confirmation" data-handover-panel="verify" aria-labelledby="confirmation-heading" hidden>
         <p class="cap">Both sides must confirm</p>
         <h2 id="confirmation-heading" class="serif">Know who you are meeting.</h2>
-        <div id="handover-status" class="handover-status" role="status" aria-live="polite" aria-atomic="true">Waiting for the buyer to enter the meeting zone.</div>
         <p id="profile-lock">Sample faces and details appear when both participants are within the demo meeting zone.</p>
         <div id="profiles" hidden>
           <div id="buyer-view">
@@ -175,16 +175,17 @@
           </div>
           <button class="btn quiet mismatch-button" id="mismatch" type="button">Someone does not match</button>
         </div>
-        <div class="demo-transaction">
+      </section>
+        <section class="panel demo-transaction" data-handover-panel="release" aria-labelledby="transaction-heading" hidden>
           <p class="cap" id="transaction-heading">Inspect &amp; receive</p>
           <p id="funds-status">₱282,000 · simulated funds held</p>
           <label class="inspection" id="seller-delivery" hidden><input id="delivered" type="checkbox" disabled> I handed the item to the buyer for inspection.</label>
           <label class="inspection"><input id="inspected" type="checkbox" disabled> <span id="inspection-label">I inspected and received the item.</span></label>
           <button class="btn fill" id="complete" type="button" disabled>Complete test handover</button>
           <p class="form-note">GPS never releases funds by itself. Both identity confirmations and item acceptance are required. Controls labeled “simulate” stand in for the other participant; a real app needs independent, authenticated confirmations.</p>
-        </div>
-      </section>
+        </section>
     </div>
+    <button id="restart-handover" class="btn quiet" type="button" hidden>Restart handover simulation</button>
     <section id="photo-reward" class="photo-reward" aria-labelledby="photo-heading" hidden>
       <div class="celebration-star" aria-hidden="true">★</div>
       <p class="cap">One happy handover. One more star.</p>
@@ -227,6 +228,7 @@
  <a href="https://unsplash.com/photos/woman-with-curly-blonde-hair-7YfFc2mzmvo" target="_blank" rel="noopener noreferrer">Vitaly Gariev</a> and <a href="https://unsplash.com/photos/man-with-curly-hair-looking-upward-cRuEN_VkBxc" target="_blank" rel="noopener noreferrer">Felipe Souza</a>, via Unsplash. These people are not Opulé users and do not endorse this demo.</p>
   </main>
   <script src="assets/app.js"></script>
+  <script src="assets/navigation.js"></script>
   <script src="assets/database.js"></script>
   <dialog id="schedule-dialog" class="agreement-dialog schedule-dialog" aria-labelledby="schedule-heading">
     <div class="offer-header"><div><p class="cap">The rendezvous</p><h2 id="schedule-heading" class="serif">A time to meet.</h2></div><button id="close-schedule" class="device-icon" type="button" aria-label="Close appointment picker" autofocus>&times;</button></div>

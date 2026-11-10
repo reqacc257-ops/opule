@@ -36,15 +36,14 @@
         '</dl>' +
       '</div>' +
       '<form id="reg-form" novalidate>' +
-
-        '<p class="cap" style="margin-bottom:24px">1 · About you</p>' +
+        '<ol class="form-progress view-nav" aria-label="Application steps"><li aria-current="step">1 · About you</li><li>2 · Your collection</li><li>3 · Video call</li></ol>' +
+        '<fieldset data-form-step><legend>About you</legend>' +
         '<label class="field"><span>Full legal name</span><input type="text" id="r-name" autocomplete="name" required></label>' +
         '<label class="field"><span>Mobile number</span><input type="tel" id="r-phone" placeholder="09xx xxx xxxx" autocomplete="tel" required></label>' +
         '<label class="field"><span>Email</span><input type="email" id="r-email" autocomplete="email" required></label>' +
         '<label class="field"><span>Your general area</span><select id="r-area">' + OPULE.areaOptions('') + '</select></label>' +
 
-        '<hr class="rule">' +
-        '<p class="cap" style="margin-bottom:24px">2 · A few questions</p>' +
+        '</fieldset><fieldset data-form-step hidden><legend>Your collection</legend>' +
         '<label class="field"><span>What do you plan to sell?</span>' +
           '<div class="choices" id="r-cats">' +
             ['Watches','Bags','Jewelry','Sneakers','Accessories','Other'].map(function (c) {
@@ -59,21 +58,22 @@
           '<select id="r-exp"><option>No, first time</option><option>Occasionally, person to person</option><option>Regularly, on other platforms</option><option>I run a shop or consignment business</option></select>' +
         '</label>' +
 
-        '<hr class="rule">' +
-        '<p class="cap" style="margin-bottom:24px">3 · Video call</p>' +
+        '</fieldset><fieldset data-form-step hidden><legend>Your video call</legend>' +
         '<label class="field"><span>ID you will present on the call</span>' +
           '<select id="r-idtype"><option>Philippine passport</option><option>Driver\u2019s license</option><option>National ID (PhilSys)</option><option>UMID</option><option>PRC ID</option></select>' +
         '</label>' +
         '<label class="field"><span>Call date (earliest: tomorrow)</span><input type="date" id="r-date" min="' + minDate + '" required></label>' +
         '<label class="field"><span>Time</span>' +
           '<select id="r-time"><option>9:00 AM</option><option>11:00 AM</option><option>2:00 PM</option><option>4:00 PM</option><option>7:00 PM</option></select>' +
-        '</label>' +
+        '</label></fieldset>' +
 
         '<p class="form-note">Review starts after the call and takes a minimum of two days. We text and email you either way.</p>' +
         '<p class="error-note" id="r-error">Fill in your name, mobile number, email, and a call date.</p>' +
-        '<button class="btn fill" type="submit" style="margin-top:28px">Submit application</button>' +
+        '<div class="step-actions"><button class="btn quiet" type="button" data-step-back hidden>Back</button><button class="btn fill" type="button" data-step-next>Continue</button><button class="btn fill" type="submit" hidden>Submit application</button></div>' +
       '</form>' +
     '</div>';
+
+  OPULE.initFormSteps(document.getElementById('reg-form'));
 
   /* toggle styling for category choices */
   document.getElementById('r-cats').addEventListener('change', function (e) {
