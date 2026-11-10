@@ -9,14 +9,14 @@ function catalog() {
   return OPULE.discovery;
 }
 
-test('discovery contains 116 distinct products from eleven sources and twenty-six stores', () => {
+test('discovery contains 128 distinct products from twelve sources and twenty-seven stores', () => {
   const { items, stores } = catalog();
-  assert.equal(items.length, 116);
-  assert.equal(stores.length, 26);
+  assert.equal(items.length, 128);
+  assert.equal(stores.length, 27);
   assert.equal(new Set(items.map(item => item.id)).size, items.length);
   assert.equal(new Set(items.map(item => item.url)).size, items.length);
   assert.equal(new Set(items.map(item => item.image)).size, items.length);
-  assert.equal(new Set(items.map(item => item.storeId)).size, 11);
+  assert.equal(new Set(items.map(item => item.storeId)).size, 12);
   assert.equal(new Set(stores.map(store => store.id)).size, stores.length);
   assert.equal(new Set(stores.map(store => store.url)).size, stores.length);
   for (const store of stores) {
@@ -40,7 +40,7 @@ test('discovery contains 116 distinct products from eleven sources and twenty-si
     const image = new URL(item.image);
     assert.equal(image.protocol, 'https:');
     assert.ok(['theorangebox.ph', 'www.fashionphile.com', 'madisonavenuecouture.com', 'medias.collectorsquare.com',
-      'www.annsfabulousfinds.com', 'bagista.co.uk', 'www.redeluxe.com', 'luxsecondchance.com', 'luxuryhelsinki.fi', 'aranaz.ph', 'r2r.ph'].includes(image.hostname));
+      'www.annsfabulousfinds.com', 'bagista.co.uk', 'www.redeluxe.com', 'luxsecondchance.com', 'luxuryhelsinki.fi', 'aranaz.ph', 'r2r.ph', 'www.gentry.ph'].includes(image.hostname));
     if (item.storeId === 'collector') {
       assert.ok(image.pathname.includes('/' + url.pathname.match(/-(\d+)\.html$/)[1] + '/'));
     } else assert.equal(image.hostname, url.hostname);
@@ -50,8 +50,8 @@ test('discovery contains 116 distinct products from eleven sources and twenty-si
 
 test('discovery search and filters combine without mixing currency prices', () => {
   const { filterItems } = catalog();
-  assert.equal(filterItems({ region: 'Philippines' }).length, 23);
-  assert.equal(filterItems({ category: 'Watches' }).length, 9);
+  assert.equal(filterItems({ region: 'Philippines' }).length, 35);
+  assert.equal(filterItems({ category: 'Watches' }).length, 21);
   assert.equal(filterItems({ category: 'Jewelry' }).length, 2);
   assert.equal(filterItems({ query: '  JUSTE UN CLOU  ' }).length, 1);
   assert.equal(filterItems({ query: 'orange', brand: 'Prada', category: 'Bags' }).length, 1);
@@ -68,6 +68,40 @@ test('discovery search and filters combine without mixing currency prices', () =
     Array.from(filterItems({}), item => item.id),
     'No misleading numeric sort across different currencies'
   );
+});
+
+test('Gentry leads discovery without being mislabelled as Philippine-made or sponsored', () => {
+  const { stores, items, filterItems } = catalog();
+  assert.equal(stores[0].id, 'gentry');
+  assert.equal(items[0].storeId, 'gentry');
+  assert.equal(filterItems({ store: 'gentry' }).length, 12);
+  assert.equal(filterItems({ store: 'gentry', madeIn: 'Philippines' }).length, 0);
+  assert.ok(filterItems({ store: 'gentry' }).every(item => item.currency === 'PHP' && item.category === 'Watches'));
+  const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
+  assert.match(html, /id="browse">\s*<section class="gentry-feature"/);
+  assert.match(html, /Editorial spotlight, not a paid placement or partnership/);
+  assert.doesNotMatch(html, /srsltid/);
+});
+
+test('spotlight assigns half to Gentry and equal remaining shares only to stores with products', () => {
+  const { stores, items, selectSpotlight } = catalog();
+  assert.equal(selectSpotlight(0).id, 'gentry');
+  assert.equal(selectSpotlight(0.499999999).id, 'gentry');
+  assert.equal(selectSpotlight(0.5).id, stores[1].id);
+  assert.equal(selectSpotlight(0.999999999).id, stores.at(-1).id);
+  const others = stores.filter(store => store.id !== 'gentry' && items.some(item => item.storeId === store.id));
+  assert.equal(others.length, 11);
+  const counts = new Map(stores.map(store => [store.id, 0]));
+  const samples = others.length * 200;
+  for (let index = 0; index < samples; index++) {
+    const id = selectSpotlight((index + 0.5) / samples).id;
+    assert.ok(items.filter(item => item.storeId === id).length >= 3, 'Every spotlight can show three products from its own store');
+    counts.set(id, counts.get(id) + 1);
+  }
+  assert.equal(counts.get('gentry'), samples / 2);
+  for (const store of others) assert.equal(counts.get(store.id), 100);
+  for (const store of stores.filter(store => !items.some(item => item.storeId === store.id))) assert.equal(counts.get(store.id), 0);
+  for (const sample of [-1, 1, NaN, Infinity]) assert.throws(() => selectSpotlight(sample), /Spotlight sample/);
 });
 
 test('Philippine production is evidence-backed and separate from store location', () => {
@@ -91,9 +125,14 @@ test('Philippine production is evidence-backed and separate from store location'
   const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
   assert.match(html, /id="discover-origin"/);
   assert.match(html, /id="browse-ph"/);
+  assert.match(html, /id="browse-all"/);
+  assert.match(html, /id="featured-ph-grid"/);
+  assert.match(html, /Filipino-made, thoughtfully found/);
   assert.match(html, /not independent certification/);
   const script = readFileSync(new URL('../../assets/discovery.js', import.meta.url), 'utf8');
   assert.match(script, /origin\.href = item\.originEvidence/);
+  assert.match(script, /function renderFeaturedPhilippineItems/);
+  assert.match(script, /el\('browse-all'\)\.addEventListener/);
 });
 
 test('new product sources preserve currencies, categories and source destinations', () => {
@@ -144,14 +183,27 @@ test('deployment image policies allow every source thumbnail without allowing ar
   assert.doesNotMatch(img, /\*|(?:^| )https:(?: |$)/);
 });
 
+test('store search uses shared full-height controls with theme-aware placeholders', () => {
+  const styles = readFileSync(new URL('../../assets/styles.css', import.meta.url), 'utf8');
+  assert.match(styles, /input\[type="text"\], input\[type="search"\][^{]+\{[^}]+min-height: 48px;/);
+  const css = readFileSync(new URL('../../assets/discovery.css', import.meta.url), 'utf8');
+  assert.match(css, /\.discovery-page input::placeholder \{ color: var\(--text-secondary\); opacity: 1; \}/);
+  assert.match(css, /\.store-filters \.field \{[^}]*margin-bottom: 0;/);
+});
+
 test('discovery uses account-free shopping-destination branding and explicitly inactive ad slots', () => {
   const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
   assert.match(html, /Many stores\.<br>One destination\./);
   assert.match(html, /No sign-up\. No checkout here\./);
   assert.doesNotMatch(html, /href="(?:auth|register|sell)\.html/);
   const slots = Array.from(html.matchAll(/data-ad-slot="([^"]+)"/g), match => match[1]);
-  assert.equal(slots.length, 3);
-  assert.equal(new Set(slots).size, 3);
+  assert.equal(slots.length, 6);
+  assert.equal(new Set(slots).size, 6);
+  assert.deepEqual(slots, ['sidebar', 'collection-banner', 'collection-footer', 'brand-spotlight', 'services-spotlight', 'stores-footer']);
+  const browse = html.slice(html.indexOf('<section data-page-view="browse"'), html.indexOf('<section data-page-view="saved"'));
+  assert.equal((browse.match(/class="discovery-intro"/g) || []).length, 1);
+  assert.ok(browse.indexOf('class="discovery-intro"') > browse.indexOf('data-ad-slot="services-spotlight"'));
+  assert.match(browse, /class="discovery-intro"[\s\S]*<\/div>\s*<\/section>\s*$/);
   assert.match(html, /No ad network, paid sponsor, tracking pixel or advertising cookies are active/);
   assert.match(html, /kept separate from product results/);
   assert.doesNotMatch(html, /adsbygoogle|googlesyndication|doubleclick/);

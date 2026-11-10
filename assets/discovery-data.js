@@ -31,6 +31,7 @@
     { id: 'r2r', name: 'Rags2Riches (R2R)', url: 'https://r2r.ph/', region: 'Philippines', currency: 'PHP', note: 'Official Filipino design house working with Philippine community artisans on handwoven bags and accessories.' }
   );
   stores.forEach(function (store) { store.reviewed = '2026-11-10'; });
+  stores.unshift({ id: 'gentry', name: 'Gentry Timepieces', url: 'https://www.gentry.ph/', region: 'Philippines', currency: 'PHP', reviewed: '2026-11-10', note: 'Luxury watch resale, trade and consignment at Shoppesville, Greenhills. Philippine retailer, not a Philippine manufacturing claim.' });
   // Titles, identifiers and prices are factual references, not copied store descriptions.
   var groups = [
     { store: 'orange', evidence: 'Search-index reference', observed: '2026-10-17', rows: [
@@ -177,6 +178,20 @@
       ['Rags2Riches', 'Limon Micro Fruit Bag', 'Bags', 2800, 'ready-today-limon-micro-fruit-bag', null, 'limon-micro-fruit-bag-fashion-rags2riches-710725.png?v=1785771955']
     ] }
   );
+  groups.unshift({ store: 'gentry', evidence: 'Store catalog reference', observed: '2026-11-10', imageBase: 'https://www.gentry.ph/cdn/shop/files/', rows: [
+    ['Rolex', 'Datejust 36 Two Tone Yellow Gold White Anniversary Diamonds 116233, 2008', 'Watches', 719000, 'rolex-datejust-36-two-tone-yellow-gold-white-anniversary-dial-with-diamonds-116233-2008', null, 'A15613_1_4a156b38-2890-499b-99c0-84105f48a3a2.jpg?v=1794120053'],
+    ['Rolex', 'Yacht-Master 40 Platinum 16622, 2003', 'Watches', 629000, 'rolex-yacht-master-40-platinum-16622-2003', null, 'A01074_1_cd5c7b65-1219-4f6d-981d-3eba6e37a5b3.jpg?v=1794119904'],
+    ['Rolex', 'GMT-Master II Bruce Wayne 126710GRNR, 2024', 'Watches', 1259000, 'rolex-gmt-master-ii-bruce-wayne-126710grnr-2030', null, 'A5105_56f85ff1-5629-48ea-a6e0-1c9905194422.png?v=1794119597'],
+    ['Cartier', 'Santos-Dumont Large Two Tone Rose Gold W2SA0011, 2021', 'Watches', 468000, 'cartier-santos-dumont-large-two-tone-rose-gold-white-dial-w2sa0011-2021', null, 'A41631_61d860f9-14d0-4d06-8b9c-e3dfe2c3017e.jpg?v=1794119238'],
+    ['Rolex', 'GMT-Master II Bruce Wayne 126710GRNR, 2026', 'Watches', 1349000, 'rolex-gmt-master-ii-bruce-wayne-126710grnr-2031', null, 'A5105_de4d49d9-5c8f-4fe6-aa7a-4164859be322.png?v=1794119083'],
+    ['Rolex', 'GMT-Master II Bruce Wayne 126710GRNR, 2026, listed new', 'Watches', 1459000, 'rolex-gmt-master-ii-bruce-wayne-126710grnr-2026-brand-new-6', null, 'ProductID_A4703_576f1b4d-6277-486f-aaeb-e57f5c47c897_e047a13f-3907-4cb0-970b-0b5ef01ba71f_28b9dff2-1b86-47ba-b877-ad3138e3d341.png?v=1794118964'],
+    ['Rolex', 'Lady Datejust 26 Two Tone Yellow Gold Champagne 69173, 1989', 'Watches', 319000, 'rolex-lady-datejust-26-two-tone-yellow-gold-champagne-dial-69173-1989', null, 'A08504_1_1_6549a13a-1c7a-4b93-8ab4-c8cac22e58a1.jpg?v=1794118814'],
+    ['Rolex', 'Datejust 41 Silver Dial 126300, 2019', 'Watches', 569000, 'rolex-datejust-41-silver-dial-126300-2019', null, 'DJ8141_95ee116f-3b3b-4cc5-b723-f223dc573fb4.jpg?v=1794118688'],
+    ['Rolex', 'Datejust 36 Two Tone Yellow Gold White Roman 126233, 2026, listed new', 'Watches', 1219000, 'rolex-datejust-36-two-tone-yellow-gold-white-roman-126233-2026-brand-new', null, 'A4999_03512024-9209-4d89-a0f3-1703beafa12d.jpg?v=1794118461'],
+    ['Rolex', 'Oyster Perpetual 26 Two Tone Yellow Gold Champagne 67193, 1983', 'Watches', 259000, 'rolex-oyster-perpetual-26-two-tone-yellow-gold-champagne-dial-67193-1983', null, 'A39341_5795a3bc-518a-4103-86d8-ec575d866d32.jpg?v=1794117744'],
+    ['Rolex', 'Datejust II White Dial 116300, 2013', 'Watches', 549000, 'rolex-datejust-ii-white-dial-116300-2013', null, 'A25281_2a8a94b4-9b4e-4a8d-bbe9-8e6d324cf88a.jpg?v=1794117561'],
+    ['Rolex', 'Submariner Date 40 Pre-Ceramic Black 16610LN, 1991', 'Watches', 579000, 'rolex-submariner-date-40-pre-ceramic-black-16610ln-1991', null, 'A04094_1_e6eaa471-b6dc-4923-91ab-627b796f901d.jpg?v=1794117246']
+  ] });
   var photos = {
     orange: [
       'dfe4-6916de0ba03a6.jpg?v=1792916824', 'e1a6-6a4f807d1a233.jpg?v=1784022229',
@@ -252,5 +267,13 @@
     });
     return result;
   }
-  OPULE.discovery = { stores: stores, items: items, filterItems: filterItems, reviewed: '2026-11-10' };
+  function selectSpotlight(sample) {
+    if (!Number.isFinite(sample) || sample < 0 || sample >= 1) throw new RangeError('Spotlight sample must be between 0 (inclusive) and 1 (exclusive)');
+    if (sample < 0.5) return stores.find(function (store) { return store.id === 'gentry'; });
+    var others = stores.filter(function (store) {
+      return store.id !== 'gentry' && items.some(function (item) { return item.storeId === store.id; });
+    });
+    return others[Math.floor((sample - 0.5) * 2 * others.length)];
+  }
+  OPULE.discovery = { stores: stores, items: items, filterItems: filterItems, selectSpotlight: selectSpotlight, reviewed: '2026-11-10' };
 })();

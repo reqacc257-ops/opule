@@ -28,7 +28,7 @@ export function createApp(db, config) {
     strictTransportSecurity: production ? undefined : false,
     contentSecurityPolicy: { directives: {
       defaultSrc: ["'self'"], scriptSrc: ["'self'"], scriptSrcAttr: ["'none'"], styleSrc: ["'self'", "'unsafe-inline'"],
-      fontSrc: ["'self'"], imgSrc: ["'self'", 'data:', 'https://theorangebox.ph', 'https://www.fashionphile.com', 'https://madisonavenuecouture.com', 'https://medias.collectorsquare.com', 'https://www.annsfabulousfinds.com', 'https://bagista.co.uk', 'https://www.redeluxe.com', 'https://luxsecondchance.com', 'https://luxuryhelsinki.fi', 'https://aranaz.ph', 'https://r2r.ph'], mediaSrc: ["'self'", 'blob:'],
+      fontSrc: ["'self'"], imgSrc: ["'self'", 'data:', 'https://theorangebox.ph', 'https://www.fashionphile.com', 'https://madisonavenuecouture.com', 'https://medias.collectorsquare.com', 'https://www.annsfabulousfinds.com', 'https://bagista.co.uk', 'https://www.redeluxe.com', 'https://luxsecondchance.com', 'https://luxuryhelsinki.fi', 'https://aranaz.ph', 'https://r2r.ph', 'https://www.gentry.ph'], mediaSrc: ["'self'", 'blob:'],
       connectSrc: ["'self'"], objectSrc: ["'none'"], frameAncestors: [req => req.path === '/demo.html' ? "'self'" : "'none'"], baseUri: ["'self'"],
       upgradeInsecureRequests: production ? [] : null
     } }

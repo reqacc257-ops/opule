@@ -4,6 +4,7 @@
   var el = function (id) { return document.getElementById(id); };
   var pageSize = 12, page = 1, savedPage = 1, storePage = 1, storePageSize = 6;
   var sourceStores = data.stores.filter(function (store) { return data.items.some(function (item) { return item.storeId === store.id; }); });
+  var spotlight = data.selectSpotlight(Math.random());
   var saved = new Set();
   var key = 'opule_discovery_saved';
   function notify(message) { el('discovery-status').textContent = message; }
@@ -27,6 +28,7 @@
   options('discover-category', Array.from(new Set(data.items.map(function (item) { return item.category; }))).sort());
   options('discover-store', sourceStores);
   options('discover-currency', Array.from(new Set(data.items.map(function (item) { return item.currency; }))).sort());
+  var philippineItems = data.items.filter(function (item) { return item.madeIn === 'Philippines'; });
   el('discovery-stats').textContent = data.items.length + ' product references from ' + sourceStores.length + ' stores / ' + data.stores.length + ' stores to explore / ' +
     new Set(data.items.map(function (item) { return item.brand; })).size + ' designers';
   function filters() {
@@ -120,6 +122,42 @@
     article.append(art, copy);
     return article;
   }
+  function renderFeaturedPhilippineItems() {
+    var featuredIds = ['aranaz:flordeliza-black-copy', 'r2r:sili-bag', 'aranaz:lagrima-kubo-medium'];
+    var fragment = document.createDocumentFragment();
+    featuredIds.forEach(function (id) {
+      var item = philippineItems.find(function (entry) { return entry.id === id; });
+      if (!item) return;
+      var store = data.stores.find(function (entry) { return entry.id === item.storeId; });
+      var article = document.createElement('article');
+      article.className = 'featured-ph-card';
+      var link = text('a', '', 'featured-ph-art');
+      link.href = item.url;
+      link.rel = 'noopener noreferrer';
+      link.setAttribute('aria-label', 'View ' + item.brand + ' ' + item.title + ' at ' + store.name);
+      var image = document.createElement('img');
+      image.src = item.image;
+      image.alt = item.brand + ' ' + item.title + ', photo from ' + store.name;
+      image.width = 480;
+      image.height = 480;
+      image.loading = 'lazy';
+      image.decoding = 'async';
+      image.referrerPolicy = 'no-referrer';
+      link.appendChild(image);
+      var details = document.createElement('div');
+      details.className = 'featured-ph-copy';
+      details.append(text('p', store.name, 'cap'), text('h3', item.title));
+      details.appendChild(text('p', new Intl.NumberFormat('en', { style: 'currency', currency: item.currency, maximumFractionDigits: 0 }).format(item.price) + ' ' + item.currency + ' / reference price', 'featured-ph-price'));
+      var origin = text('a', 'Made in Philippines / brand-stated', 'origin-label');
+      origin.href = item.originEvidence;
+      origin.rel = 'noopener noreferrer';
+      origin.setAttribute('aria-label', 'Read ' + store.name + "'s Philippine production statement");
+      details.appendChild(origin);
+      article.append(link, details);
+      fragment.appendChild(article);
+    });
+    el('featured-ph-grid').replaceChildren(fragment);
+  }
   function renderCards(root, items) {
     var fragment = document.createDocumentFragment();
     items.forEach(function (item) { fragment.appendChild(card(item)); });
@@ -158,9 +196,22 @@
     }
   }
   function update() { priceControls(); page = 1; render(); }
+  el('browse-spotlight').addEventListener('click', function () {
+    el('discovery-filters').reset();
+    el('discover-store').value = spotlight.id;
+    update();
+    el('discovery-grid').tabIndex = -1;
+    el('discovery-grid').focus({ preventScroll: true });
+    el('discovery-grid').scrollIntoView({ block: 'start', behavior: 'instant' });
+  });
   el('browse-ph').addEventListener('click', function () {
     el('discovery-filters').reset();
     el('discover-origin').value = 'Philippines';
+    update();
+    el('discovery-grid').scrollIntoView({ block: 'start', behavior: 'instant' });
+  });
+  el('browse-all').addEventListener('click', function () {
+    el('discovery-filters').reset();
     update();
     el('discovery-grid').scrollIntoView({ block: 'start', behavior: 'instant' });
   });
@@ -236,7 +287,19 @@
   var compact = matchMedia('(max-width: 760px)');
   el('market-refine').open = !compact.matches;
   compact.addEventListener('change', function (event) { el('market-refine').open = !event.matches; });
-  render(); renderSaved(); renderStores();
+  render(); renderSaved(); renderStores(); renderFeaturedPhilippineItems();
+  var spotlightItems = data.items.filter(function (item) { return item.storeId === spotlight.id; });
+  el('spotlight-location').textContent = 'The store spotlight / ' + spotlight.region;
+  el('spotlight-title').textContent = spotlight.name + '.';
+  el('spotlight-tagline').textContent = spotlight.id === 'gentry' ? 'Time worth discovering.' : 'Independent stores. Distinctive finds.';
+  el('spotlight-description').textContent = spotlight.note + (spotlightItems.length ? '' : ' Directory only: products are not imported into our edit yet. Explore the collection on its own website.');
+  el('spotlight-visit').href = spotlight.url;
+  el('spotlight-visit').textContent = 'Visit ' + spotlight.name;
+  el('spotlight-visit').hidden = false;
+  el('browse-spotlight').hidden = spotlightItems.length === 0;
+  el('spotlight-grid').hidden = spotlightItems.length === 0;
+  el('spotlight-grid').setAttribute('aria-label', 'Featured pieces from ' + spotlight.name);
+  renderCards(el('spotlight-grid'), spotlightItems.slice(0, 3));
   OPULE.initPageNavigation({
     root: el('buyer-root'), nav: document.querySelector('[aria-label="Buyer navigation"]'),
     defaultHash: '#browse', routes: { '#browse': 'browse', '#collection-selection': 'browse', '#edit': 'browse', '#saved': 'saved', '#stores': 'stores', '#how': 'how' },

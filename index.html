@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Opulé — Many stores. One destination.</title>
 <meta name="description" content="Your luxury shopping destination, without the extra stops. Discover pieces across independent stores, save your favorites without signing in, and buy directly from the original seller.">
+<script src="assets/theme.js"></script>
 <link rel="stylesheet" href="assets/styles.css">
 <link rel="stylesheet" href="assets/marketplace.css">
 <link rel="stylesheet" href="assets/discovery.css">
@@ -12,10 +13,12 @@
 <body class="marketplace-page discovery-page">
 <a class="skip-link" href="#buyer-root">Skip to collection</a>
 <header class="market-header">
+  <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Dark mode" title="Toggle dark mode" aria-pressed="false" hidden><span class="theme-switch" aria-hidden="true"><span class="theme-switch-thumb"></span><svg class="theme-icon theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" focusable="false"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg><svg class="theme-icon theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" focusable="false"><path d="M20.5 13.1A8.5 8.5 0 0 1 10.9 3.5a8.5 8.5 0 1 0 9.6 9.6Z"/></svg></span></button>
   <a class="brand" href="index.html">OPULÉ</a>
   <nav aria-label="Main navigation"><a href="#browse">Discover</a><a href="#saved">Saved pieces</a><a href="#stores">The stores</a></nav>
   <span class="market-edition">MANY STORES. ONE DESTINATION.</span>
 </header>
+<p id="theme-status" class="theme-status" role="status" aria-live="polite"></p>
 <div class="market-layout">
   <aside class="market-sidebar" aria-label="Collection filters">
     <p class="cap">A wider world of luxury</p><h1 class="serif">Find your piece.</h1>
@@ -44,7 +47,18 @@
   </aside>
   <main class="market-main" id="buyer-root">
     <section data-page-view="browse" id="browse">
-      <div class="discovery-intro"><p class="cap">Your luxury shopping destination</p><h2>Many stores.<br>One destination.</h2><p>Think of a shopping mall, without the extra stops. We bring independent luxury stores into one easy-to-browse edit. Discover here, then visit the original store to buy.</p><p class="discovery-promise">No sign-up. No checkout here. Just a simpler way to find your next piece.</p><button class="btn quiet" type="button" id="browse-ph">Discover Filipino-made pieces</button><p id="discovery-stats" class="discovery-stats"></p></div>
+      <section class="gentry-feature" aria-labelledby="spotlight-title">
+        <div class="gentry-feature-heading"><div><p class="cap" id="spotlight-location">The store spotlight</p><h2 id="spotlight-title">A store worth discovering.</h2><p class="gentry-tagline" id="spotlight-tagline">Independent stores. Distinctive finds.</p><p id="spotlight-description"></p></div><div class="local-edit-actions"><button class="btn fill" id="browse-spotlight" type="button" hidden>Explore its pieces</button><a class="btn quiet" id="spotlight-visit" hidden rel="noopener noreferrer">Visit store</a></div></div>
+        <p class="catalog-disclosure">Editorial spotlight, not a paid placement or partnership. Store location does not establish manufacturing origin. Prices are dated references; confirm stock and condition directly.</p>
+        <div id="spotlight-grid" class="gentry-feature-grid" aria-label="Featured store pieces"></div>
+      </section>
+      <section class="local-edit" aria-labelledby="local-edit-title">
+        <div class="local-edit-heading"><div><p class="cap">A closer look at home</p><h2 id="local-edit-title">Filipino-made, thoughtfully found.</h2><p>Discover locally made pieces alongside independent stores from around the world. The full collection stays just below.</p></div>
+          <div class="local-edit-actions"><button class="btn fill" type="button" id="browse-ph">Explore all Filipino-made</button><button class="btn quiet" type="button" id="browse-all">Browse all stores &amp; pieces</button></div>
+        </div>
+        <div id="featured-ph-grid" class="featured-ph-grid" aria-label="Featured Filipino-made pieces"></div>
+        <p class="local-edit-note">Origin is based on each brand's published production information, not independent certification.</p>
+      </section>
       <aside class="ad-space ad-space-banner" data-ad-slot="collection-banner" aria-label="Reserved collection advertising space"><p class="ad-label">Advertisement space</p><p class="ad-placeholder-title">Your next discovery could start here.</p><p>Reserved for future advertising. No paid placement is currently displayed.</p></aside>
       <div class="collection-toolbar"><div><h2>The discovery edit</h2><p id="listing-count" role="status" aria-live="polite"></p></div>
         <label class="field"><span>Sort by</span><select id="discovery-sort"><option value="curated">Curated order</option><option value="title">Designer: A to Z</option><option value="price-low" disabled>Price: low to high</option><option value="price-high" disabled>Price: high to low</option></select></label>
@@ -55,6 +69,11 @@
       <div class="market-empty" id="discovery-empty" hidden><h3>No pieces match this search.</h3><p>Try a different store, designer or budget.</p><button class="btn" type="button" id="clear-search">Clear filters</button></div>
       <nav class="discovery-pagination" aria-label="Collection pages"><button class="btn quiet" id="previous-page" type="button">Previous</button><span id="page-status" role="status"></span><button class="btn quiet" id="next-page" type="button">Next</button></nav>
       <aside class="ad-space ad-space-banner" data-ad-slot="collection-footer" aria-label="Reserved post-collection advertising space"><p class="ad-label">Advertisement space</p><p class="ad-placeholder-title">Considered brands. A considered space.</p><p>Future sponsored content will be labelled and kept separate from product results.</p></aside>
+      <div class="ad-space-pair">
+        <aside class="ad-space" data-ad-slot="brand-spotlight" aria-label="Reserved brand spotlight advertising space"><p class="ad-label">Advertisement space</p><p class="ad-placeholder-title">Room for a brand story.</p><p>Reserved for a future advertiser. No paid placement is active.</p></aside>
+        <aside class="ad-space" data-ad-slot="services-spotlight" aria-label="Reserved services advertising space"><p class="ad-label">Advertisement space</p><p class="ad-placeholder-title">A space for considered services.</p><p>Reserved for future advertising, separate from our product selection. No ad is currently running.</p></aside>
+      </div>
+      <div class="discovery-intro"><p class="cap">Your luxury shopping destination</p><h2>Many stores.<br>One destination.</h2><p>Think of a shopping mall, without the extra stops. We bring independent luxury stores into one easy-to-browse edit. Discover here, then visit the original store to buy.</p><p class="discovery-promise">No sign-up. No checkout here. Just a simpler way to find your next piece.</p><p id="discovery-stats" class="discovery-stats"></p></div>
     </section>
     <section data-page-view="saved" id="saved" hidden><p class="cap">Your personal edit</p><h2 class="discovery-heading">Worth another look.</h2><p class="catalog-disclosure">Saved only in this browser, without an account. No reservations, price alerts or automatic availability updates.</p><div id="saved-grid" class="catalog-grid discovery-grid"></div><div class="market-empty" id="saved-empty" hidden><h3>Your shortlist starts with a discovery.</h3><p>Use Save on any piece to keep it here.</p><a class="btn" href="#browse">Explore the collection</a></div><nav class="discovery-pagination" aria-label="Shortlist pages"><button class="btn quiet" id="saved-previous" type="button">Previous</button><span id="saved-page-status" role="status"></span><button class="btn quiet" id="saved-next" type="button">Next</button></nav></section>
     <section data-page-view="stores" id="stores" hidden><p class="cap">The source of your next find</p><h2 class="discovery-heading">Independent points of view.</h2><p class="catalog-disclosure">A curated store directory, not endorsements or partnerships. International stores may not deliver every item to the Philippines. Check shipping, duties and return terms before purchasing. Some stores are directory-only; their products have not been imported into our edit.</p>
@@ -68,6 +87,7 @@
       <div id="store-directory" class="store-directory"></div>
       <div id="store-empty" class="market-empty" hidden><h3>No matching stores.</h3><button class="btn" id="store-clear" type="button">Clear store filters</button></div>
       <nav class="discovery-pagination" aria-label="Store directory pages"><button class="btn quiet" id="store-previous" type="button">Previous</button><span id="store-page-status" role="status"></span><button class="btn quiet" id="store-next" type="button">Next</button></nav>
+      <aside class="ad-space ad-space-banner" data-ad-slot="stores-footer" aria-label="Reserved store directory advertising space"><p class="ad-label">Advertisement space</p><p class="ad-placeholder-title">Be discovered between destinations.</p><p>Reserved for future advertising. This is not a store endorsement or an active sponsorship.</p></aside>
     </section>
     <section data-page-view="how" id="how" class="market-approach" hidden><p class="cap">Many stores. One destination.</p><h2>We bring the stores together.<br>You choose where to shop.</h2><p class="catalog-disclosure">Like a shopping destination with independent shops, Opulé helps you find your way. We are a discovery intermediary, not the seller or a checkout service. No account is needed to browse or save pieces. We are not affiliated with any shopping mall or the listed stores.</p><div class="approach-grid">
       <div><p class="cap">01 · Explore together</p><p>Browse real product references from several stores in one place. Filter by designer, category, store and original currency.</p></div>
