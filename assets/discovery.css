@@ -1,0 +1,56 @@
+.skip-link { position: absolute; top: -100px; left: 16px; z-index: 20; padding: 12px; background: var(--surface); }
+.skip-link:focus { top: 16px; }
+.discovery-intro { padding: clamp(24px, 4vw, 56px); background: var(--surface-muted); border: 1px solid var(--line); }
+.discovery-intro h2 { font-size: clamp(32px, 4vw, 58px); font-weight: 400; line-height: 1.12; letter-spacing: -.035em; margin: 20px 0; }
+.discovery-intro > p:not(.cap) { max-width: 62ch; font-size: 14px; }
+.discovery-intro .discovery-stats { border-top: 1px solid var(--line); padding-top: 20px; margin-top: 24px; font-size: 12px; }
+.discovery-intro .discovery-promise { margin-top: 16px; color: var(--text); font-weight: 500; }
+.ad-space { border: 1px solid var(--line); background: var(--surface-muted); color: var(--text-secondary); padding: 24px; }
+.ad-label { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 14px; }
+.ad-space .ad-placeholder-title { font-size: 18px; font-weight: 400; line-height: 1.4; color: var(--text); margin-bottom: 8px; }
+.ad-space > p:last-child { font-size: 12px; line-height: 1.7; max-width: 62ch; }
+.ad-space-banner { display: flex; flex-direction: column; justify-content: center; min-height: 180px; margin: 28px 0; }
+.ad-space-sidebar { min-height: 250px; margin-top: 32px; padding: 20px; }
+.ad-space-sidebar .ad-placeholder-title { font-size: 20px; }
+@media (max-width: 760px) {
+  .ad-space-sidebar { display: none; }
+  .ad-space-banner { min-height: 140px; padding: 20px; }
+}
+.discovery-page .workspace-nav #saved-count { display: inline; margin-left: auto; font-variant-numeric: tabular-nums; }
+.discovery-heading { font-size: clamp(30px, 4vw, 46px); font-weight: 400; margin: 16px 0 24px; }
+.discovery-card { display: flex; flex-direction: column; min-width: 0; border: 1px solid var(--line); background: var(--panel); }
+.discovery-art { position: relative; display: grid; place-items: center; aspect-ratio: 1; background: #fff; overflow: hidden; }
+.discovery-art img { width: 100%; height: 100%; object-fit: contain; padding: 16px; }
+.discovery-art > span { position: absolute; bottom: 10px; padding: 8px; font-size: 11px; color: var(--text-secondary); background: var(--surface); }
+.discovery-art [hidden] { display: none; }
+.discovery-card-copy { display: flex; flex-direction: column; flex: 1; gap: 10px; padding: 20px; }
+.discovery-card-copy .cap { font-size: 10px; letter-spacing: .06em; }
+.discovery-card h3 { font-size: 16px; font-weight: 500; line-height: 1.5; overflow-wrap: anywhere; }
+.discovery-card .source-price { font-size: 15px; color: var(--text); font-variant-numeric: tabular-nums; }
+.discovery-card small { font-size: 11px; line-height: 1.6; }
+.discovery-card .reference-note { margin-top: auto; padding-top: 10px; }
+.origin-label { align-self: flex-start; font-size: 11px; line-height: 1.6; padding: 6px 10px; border: 1px solid var(--line); background: var(--surface-muted); }
+.discovery-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.discovery-actions .btn { flex: 1; min-height: 44px; padding: 10px; font-size: 12px; text-align: center; }
+.discovery-actions button[aria-pressed="true"] { background: var(--surface-muted); border-color: var(--accent); }
+.discovery-pagination { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 16px; margin: 32px 0; font-size: 12px; }
+.discovery-pagination .btn { min-height: 44px; font-size: 12px; padding: 10px 20px; }
+.store-directory { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.store-filters { display: flex; flex-wrap: wrap; align-items: end; gap: 16px; margin-bottom: 20px; }
+.store-filters .field { flex: 1 1 180px; min-width: 0; }
+.store-filters input, .store-filters select { width: 100%; }
+#store-count { margin-bottom: 20px; font-size: 12px; }
+.store-directory small { display: block; font-size: 11px; line-height: 1.6; }
+.store-directory article { border: 1px solid var(--line); padding: 28px; background: var(--panel); }
+.store-directory h3 { font-size: 24px; font-weight: 400; margin: 16px 0; }
+.store-directory p:not(.cap) { font-size: 14px; margin-bottom: 16px; }
+.store-directory .btn { margin: 8px 8px 0 0; font-size: 12px; }
+.discovery-page [data-page-view][hidden] { display: none; }
+.discovery-page button:disabled { opacity: .5; cursor: not-allowed; }
+.discovery-page .market-empty h3 { font-size: 24px; margin-bottom: 12px; }
+.discovery-page #discovery-status:not(:empty) { padding: 16px; border: 1px solid var(--control-line); margin-top: 16px; }
+@media (max-width: 760px) {
+  .store-directory { grid-template-columns: minmax(0, 1fr); }
+  .discovery-card-copy { padding: 16px; }
+  .discovery-grid { gap: 20px 12px; }
+}
