@@ -23,8 +23,8 @@
   <aside class="market-sidebar" aria-label="Collection filters">
     <p class="cap">A wider world of luxury</p><h1 class="serif">Find your piece.</h1>
     <nav class="workspace-nav" aria-label="Buyer navigation">
-      <a href="#browse" aria-current="location">Browse pieces</a><a href="#saved">Your shortlist <span id="saved-count">0</span></a>
-      <a href="#stores">Explore the stores</a><a href="#how">How it works</a>
+      <a href="#browse" aria-current="location">Browse</a><a href="#saved">Saved <span id="saved-count">0</span></a>
+      <a href="#stores">Stores</a><a href="#how">How it works</a>
     </nav>
     <div id="buyer-refinements">
       <form id="discovery-filters">
@@ -50,7 +50,8 @@
       <section class="gentry-feature" aria-labelledby="spotlight-title">
         <div class="gentry-feature-heading"><div><p class="cap" id="spotlight-location">The store spotlight</p><h2 id="spotlight-title">A store worth discovering.</h2><p class="gentry-tagline" id="spotlight-tagline">Independent stores. Distinctive finds.</p><p id="spotlight-description"></p></div><div class="local-edit-actions"><button class="btn fill" id="browse-spotlight" type="button" hidden>Explore its pieces</button><a class="btn quiet" id="spotlight-visit" hidden rel="noopener noreferrer">Visit store</a></div></div>
         <p class="catalog-disclosure">Editorial spotlight, not a paid placement or partnership. Store location does not establish manufacturing origin. Prices are dated references; confirm stock and condition directly.</p>
-        <div id="spotlight-grid" class="gentry-feature-grid" aria-label="Featured store pieces"></div>
+        <p class="spotlight-swipe-hint" id="spotlight-swipe-hint">Swipe to explore the featured pieces.</p>
+        <div id="spotlight-grid" class="gentry-feature-grid" role="region" tabindex="0" aria-label="Featured store pieces"></div>
       </section>
       <section class="local-edit" aria-labelledby="local-edit-title">
         <div class="local-edit-heading"><div><p class="cap">A closer look at home</p><h2 id="local-edit-title">Filipino-made, thoughtfully found.</h2><p>Discover locally made pieces alongside independent stores from around the world. The full collection stays just below.</p></div>

@@ -191,6 +191,13 @@ test('discovery has aligned actions and narrow-screen safe-area layouts', () => 
   assert.match(css, /safe-area-inset-bottom/);
   assert.match(css, /@media \(max-width: 480px\)/);
   assert.match(css, /\.discovery-grid \{ grid-template-columns: minmax\(0, 1fr\); \}/);
+  assert.match(css, /@media \(max-width: 1024px\)/);
+  assert.match(css, /\.discovery-page \.market-layout \{ display: block; \}/);
+  assert.match(css, /\.featured-ph-card \{ grid-template-columns: 104px minmax\(0, 1fr\); \}/);
+  assert.match(css, /scroll-snap-type: x mandatory/);
+  assert.match(html, /id="spotlight-grid"[^>]*tabindex="0"/);
+  const script = readFileSync(new URL('../../assets/discovery.js', import.meta.url), 'utf8');
+  assert.match(script, /var compact = matchMedia\('\(max-width: 1024px\)'\)/);
 });
 
 test('store search uses shared full-height controls with theme-aware placeholders', () => {

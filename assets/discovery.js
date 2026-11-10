@@ -284,7 +284,7 @@
       el('store-directory').scrollIntoView({ block: 'start', behavior: 'instant' });
     });
   });
-  var compact = matchMedia('(max-width: 760px)');
+  var compact = matchMedia('(max-width: 1024px)');
   el('market-refine').open = !compact.matches;
   compact.addEventListener('change', function (event) { el('market-refine').open = !event.matches; });
   render(); renderSaved(); renderStores(); renderFeaturedPhilippineItems();

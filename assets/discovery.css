@@ -64,6 +64,7 @@
 .gentry-feature-heading p:not(.cap):not(.gentry-tagline) { max-width: 58ch; font-size: 14px; }
 .gentry-feature-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 .gentry-feature [hidden] { display: none; }
+.spotlight-swipe-hint { display: none; }
 .gentry-feature .discovery-art { aspect-ratio: 4 / 5; }
 @media (max-width: 1000px) {
   .gentry-feature-grid { grid-template-columns: minmax(0, 1fr); }
@@ -80,10 +81,10 @@
 .local-edit-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-items: stretch; min-width: 0; }
 .local-edit-actions .btn { width: 100%; min-width: 0; min-height: 48px; padding: 12px 18px; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
 .featured-ph-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.featured-ph-card { display: grid; grid-template-columns: minmax(90px, 34%) 1fr; min-width: 0; border: 1px solid var(--line); background: var(--surface); }
+.featured-ph-card { display: grid; grid-template-columns: minmax(90px, 34%) minmax(0, 1fr); min-width: 0; border: 1px solid var(--line); background: var(--surface); }
 .featured-ph-art { display: block; min-width: 0; aspect-ratio: 1; overflow: hidden; background: #fff; }
 .featured-ph-art img { width: 100%; height: 100%; object-fit: cover; }
-.featured-ph-copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 8px; padding: 12px; }
+.featured-ph-copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-width: 0; gap: 8px; padding: 12px; overflow-wrap: break-word; }
 .featured-ph-copy .cap { font-size: 9px; }
 .featured-ph-copy h3 { font-size: 13px; font-weight: 500; line-height: 1.4; }
 .featured-ph-price { font-size: 11px; }
@@ -122,8 +123,8 @@
 .discovery-card small { font-size: 11px; line-height: 1.6; }
 .discovery-card .reference-note { margin-top: auto; padding-top: 10px; }
 .origin-label { align-self: flex-start; font-size: 11px; line-height: 1.6; padding: 6px 10px; border: 1px solid var(--line); background: var(--surface-muted); }
-.discovery-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
-.discovery-actions .btn { flex: 1; min-height: 44px; padding: 10px; font-size: 12px; text-align: center; }
+.discovery-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 6px; }
+.discovery-actions .btn { min-width: 0; min-height: 48px; padding: 10px; font-size: 12px; text-align: center; }
 .discovery-actions button[aria-pressed="true"] { background: var(--surface-muted); border-color: var(--accent); }
 .discovery-pagination { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 16px; margin: 32px 0; font-size: 12px; }
 .discovery-pagination .btn { min-height: 44px; font-size: 12px; padding: 10px 20px; }
@@ -143,19 +144,57 @@
 .discovery-page button:disabled { opacity: .5; cursor: not-allowed; }
 .discovery-page .market-empty h3 { font-size: 24px; margin-bottom: 12px; }
 .discovery-page #discovery-status:not(:empty) { padding: 16px; border: 1px solid var(--control-line); margin-top: 16px; }
-@media (max-width: 760px) {
-  .discovery-page .market-header { padding-top: max(16px, env(safe-area-inset-top)); padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
-  .discovery-page .market-main, .discovery-page .market-sidebar { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+@media (max-width: 1200px) {
+  .local-edit-heading { align-items: stretch; flex-direction: column; }
+  .local-edit-actions { width: 100%; }
+  .featured-ph-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .featured-ph-card { grid-template-columns: 104px minmax(0, 1fr); }
+  .featured-ph-art { width: 104px; height: 104px; aspect-ratio: 1; align-self: center; }
+  .featured-ph-art img { object-fit: contain; }
+  .featured-ph-copy .origin-label { font-size: 11px; }
+}
+@media (max-width: 1024px) {
+  .discovery-page .market-layout { display: block; }
+  .discovery-page .market-header { min-height: 80px; padding: max(12px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) 12px max(20px, env(safe-area-inset-left)); }
+  .discovery-page .market-header nav, .discovery-page .market-edition { display: none; }
+  .discovery-page .market-sidebar { padding: 12px max(20px, env(safe-area-inset-right)) 16px max(20px, env(safe-area-inset-left)); border-right: 0; border-bottom: 1px solid var(--line); }
+  .discovery-page .market-sidebar > .cap, .discovery-page .market-sidebar > h1,
+  .discovery-page .sidebar-note, .discovery-page .ad-space-sidebar { display: none; }
+  .discovery-page .market-main { padding: 20px max(20px, env(safe-area-inset-right)) 24px max(20px, env(safe-area-inset-left)); }
   .discovery-page .market-main { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
-  .discovery-page .market-sidebar .workspace-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .discovery-page .workspace-nav a { min-height: 48px; font-size: 12px; }
+  .discovery-page .market-sidebar .workspace-nav { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding-bottom: 12px; margin-bottom: 12px; }
+  .discovery-page .workspace-nav a { justify-content: center; min-width: 0; min-height: 48px; padding: 8px 4px; font-size: 12px; text-align: center; }
+  .discovery-page .workspace-nav #saved-count { margin-left: 0; }
+  .discovery-page .market-sidebar .market-search { margin-bottom: 0; }
+  .discovery-page .market-refine > summary { display: list-item; padding: 12px 0 0; min-height: 44px; color: var(--accent); font-size: 13px; cursor: pointer; }
+  .discovery-page .market-refine[open] > summary { padding-bottom: 16px; }
+  .discovery-page .market-sidebar input, .discovery-page .market-sidebar select { font-size: 16px; }
+  .gentry-feature { padding: 24px; }
+  .gentry-feature-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .gentry-feature-grid .discovery-card { display: flex; }
+  .gentry-feature .discovery-art { aspect-ratio: 1; }
   .gentry-feature-heading, .local-edit-heading { gap: 20px; }
   .gentry-feature-heading > div:first-child { flex-basis: 100%; min-width: 0; }
   .local-edit-actions { width: 100%; }
-  .gentry-feature h2, .local-edit-heading h2, .discovery-heading { overflow-wrap: anywhere; }
+  .gentry-feature h2, .local-edit-heading h2, .discovery-heading { overflow-wrap: break-word; }
+  .discovery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .discovery-page input, .discovery-page select { font-size: 16px; }
+  .discovery-card-copy { padding: 16px; }
+  .discovery-grid { gap: 20px 12px; }
+  .ad-space-pair { gap: 12px; }
+}
+@media (max-width: 600px) {
+  .discovery-page .market-header { min-height: 72px; }
+  .discovery-page .market-sidebar, .discovery-page .market-main { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+  .discovery-page .workspace-nav a { flex-wrap: wrap; gap: 2px 6px; font-size: 11px; }
+  .gentry-feature h2 { font-size: 32px; }
+  .gentry-tagline { font-size: 18px; }
+  .gentry-feature-grid { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 88%; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: 1px; gap: 12px; padding-bottom: 12px; }
+  .gentry-feature-grid .discovery-card { scroll-snap-align: start; }
+  .gentry-feature .discovery-art { aspect-ratio: 4 / 3; }
+  .spotlight-swipe-hint { display: block; margin-bottom: 12px; font-size: 12px; color: var(--text-secondary); }
   .discovery-page .collection-toolbar { align-items: stretch; flex-direction: column; gap: 12px; }
   .discovery-page .collection-toolbar label.field { width: 100%; }
-  .discovery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .discovery-actions { display: grid; grid-template-columns: minmax(0, 1fr); }
   .discovery-actions .btn { width: 100%; min-height: 48px; }
   .store-filters { align-items: stretch; }
@@ -165,10 +204,9 @@
   .store-directory .btn { display: flex; width: 100%; min-height: 48px; margin: 12px 0 0; }
   .discovery-pagination { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; }
   .discovery-pagination .btn { padding: 10px 8px; min-height: 48px; min-width: 0; }
-  .discovery-page input, .discovery-page select { font-size: 16px; }
   .store-directory { grid-template-columns: minmax(0, 1fr); }
-  .discovery-card-copy { padding: 16px; }
-  .discovery-grid { gap: 20px 12px; }
+  .approach-grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .ad-space-banner { min-height: 112px; }
 }
 @media (max-width: 480px) {
   .local-edit-actions { grid-template-columns: minmax(0, 1fr); }
@@ -180,8 +218,9 @@
   .discovery-page .market-header { grid-template-columns: minmax(0, 1fr) auto; }
   .discovery-page .market-header > .brand { grid-column: 1; justify-self: start; font-size: 26px; }
   .discovery-page .theme-toggle { grid-column: 2; }
-  .featured-ph-card { grid-template-columns: 72px minmax(0, 1fr); }
-  .featured-ph-art { width: 72px; height: 90px; }
+  .featured-ph-card { grid-template-columns: 80px minmax(0, 1fr); }
+  .featured-ph-art { width: 80px; height: 80px; }
   .featured-ph-copy { padding: 8px; }
+  .discovery-actions { grid-template-columns: minmax(0, 1fr); }
   .approach-grid { grid-template-columns: minmax(0, 1fr); }
 }
