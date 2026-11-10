@@ -50,7 +50,8 @@
           ? 'Reference price shown on the source site when sampled; this is not an Opulé offer.'
           : 'Seller asking price. No payment processing, escrow or buyer protection is provided.') + '</p>' +
         (!isSample && !available ? '<p class="listing-notice">' + OPULE.esc(listing.status === 'sold' ? 'This piece has been marked sold.' : 'This piece is archived and hidden from public browsing.') + '</p>' : '') +
-        '<nav class="view-nav" id="listing-navigation" aria-label="Listing information"><a href="#details" aria-current="location">Piece details</a><a href="#exchange">Chat &amp; handover</a></nav>' +
+        '<p><a class="btn fill" href="#exchange">' + (isSample ? 'About this sample' : ownListing ? 'Manage this piece' : 'Contact the seller') + '</a></p>' +
+        '<nav class="view-nav" id="listing-navigation" aria-label="Listing information"><a href="#details" aria-current="location">Piece details</a><a href="#exchange">' + (isSample ? 'Sample information' : 'Contact the seller') + '</a></nav>' +
         '<section data-page-view="details">' +
         '<dl class="facts">' +
           '<dt>Details</dt><dd>' + OPULE.esc(listing.meta || '—') + '</dd>' +
@@ -64,9 +65,9 @@
         '<section data-page-view="exchange" hidden><div class="panel">' +
           '<div class="head"><span class="cap">Chat before choosing a place</span></div>' +
           '<p>' + (isSample
-            ? 'Buyers open a messaging-style chat; sellers can filter sample buyers by transaction history, approximate distance, and verification. Agree on the price and meeting intent first, then choose an Opulé suggestion or propose your own public venue.'
+            ? 'This is a reference piece, not an offer for sale. Use the sample accounts to try website messaging without arranging a real transaction.'
             : 'Agree on the price and meeting intent in chat first, then choose a venue together.') + '</p>' +
-          (isSample ? '<a class="btn fill" href="demo.html" style="margin-top:24px">Open sample simulation</a>' : '') +
+          (isSample ? '<a class="btn" href="' + (user && user.demo ? 'inbox.html' : 'auth.html') + '" style="margin-top:24px">Try website messaging</a>' : '') +
         '</div>' +
         (isSample
           ? '<div class="listing-notice">' +

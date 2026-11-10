@@ -196,7 +196,7 @@ test('sample studio uses account identity, scopes inventory and counts, and hide
   assert.doesNotMatch(element('seller-catalog').innerHTML, /Gucci bag/);
   assert.match(element('sell-root').innerHTML, /Your studio, Alex/);
   assert.match(element('sell-root').innerHTML, /<strong>1<small>enquiries/);
-  assert.match(element('sell-root').innerHTML, /<strong>1<small>sample plans/);
+  assert.doesNotMatch(element('sell-root').innerHTML, /Open handovers|sample plans|demo\.html/);
   assert.doesNotMatch(element('sell-root').innerHTML, /id="new-listing"|id="sell-form"|demo-reset/);
   assert.deepEqual(errors, []);
 });
@@ -308,15 +308,26 @@ test('studio reply failure preserves drafts and successful sends prevent duplica
   assert.match(element('studio-message-status').textContent, /Reply sent/);
 });
 
-test('studio handover states reflect agreements, venue and completion without inventing progress', () => {
-  const { OPULE } = harness();
-  const status = OPULE.studioHandoverStatus;
-  assert.equal(status(), 'Conversation open');
-  assert.equal(status({ buyerAgreement: true }), 'Awaiting agreement');
-  assert.equal(status({ buyerAgreement: true, sellerAgreement: true }), 'Choose a venue');
-  assert.equal(status({ buyerAgreement: true, sellerAgreement: true, proposedVenue: {} }), 'Venue proposed');
-  assert.equal(status({ buyerAgreement: true, sellerAgreement: true, proposedVenue: {}, venueAccepted: true }), 'Meeting agreed');
-  assert.equal(status({ completed: true }), 'Handover complete');
+test('website sample studio keeps messaging and piece links without a phone simulation', async () => {
+  const { element, OPULE, listings } = harness({
+    db: { all: async () => [{ id: 'jamie', name: 'Jamie' }], messagesFor: async () => [] }
+  });
+  const render = await OPULE.renderSampleStudio(element('sell-root'), { id: 'alex', name: 'Alex' }, listings,
+    [{ id: 'chat', buyerId: 'jamie', listingId: 'one & two' }]);
+  render('correspondence');
+  assert.match(element('studio-chat-heading').innerHTML, /listing\.html\?id=one%20%26%20two/);
+  assert.doesNotMatch(element('view-correspondence').innerHTML, /demo\.html|studio-plans|Appointments/);
+});
+
+test('signed-in buyers open the collection and website messages instead of the phone', async () => {
+  for (const demo of [false, true]) {
+    const { run, element, errors } = harness({ getUser: () => ({ id: 'jamie', name: 'Jamie', role: 'buyer', demo }) });
+    await run('index-page');
+    assert.equal(element('buyer-view-browse').hidden, false);
+    assert.equal(element('ledger').children.length, 3);
+    assert.equal(element('buyer-chat').href, 'inbox.html');
+    assert.deepEqual(errors, []);
+  }
 });
 
 test('studio navigation tracks section hashes and history without activating hidden links', () => {

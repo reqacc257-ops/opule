@@ -6,7 +6,7 @@
       root.innerHTML = '<h2>Sign in to open your messages.</h2><a class="btn" href="auth.html">Your account</a>';
       return;
     }
-    root.innerHTML = '<div class="inbox-toolbar"><h2>Correspondence</h2><button class="btn quiet" type="button" data-refresh>Refresh inbox</button></div>' +
+    root.innerHTML = '<div class="inbox-toolbar"><h2>Your messages</h2><button class="btn quiet" type="button" data-refresh>Refresh inbox</button></div>' +
       '<p class="form-note">Messages are saved on this server. Refresh for new replies. No payments, escrow, identity checks or item authentication are provided. ' +
       (user.demo ? 'This is a shared sample account; never enter personal information.' : 'Never send passwords, ID images or payment credentials in chat.') + '</p>' +
       '<div class="inbox-layout"><nav class="inbox-threads" aria-label="Your conversations"></nav><section class="inbox-conversation" aria-label="Selected conversation">' +
@@ -83,8 +83,18 @@
         if (thread) await select(thread);
         else {
           selected = null;
+          ++version;
+          input.value = '';
+          input.disabled = send.disabled = true;
+          find('[data-title]').textContent = 'No conversations yet';
+          find('[data-listing]').hidden = true;
+          log.innerHTML = '<p>' + (user.role === 'seller'
+            ? 'Buyer enquiries will appear here. Make sure your collection is ready to browse.'
+            : 'Find a piece you like, then contact its seller to start a conversation.') + '</p><a class="btn" href="' +
+            (user.role === 'seller' ? 'sell.html#studio-listings' : 'index.html#browse') + '">' +
+            (user.role === 'seller' ? 'Manage your collection' : 'Browse the collection') + '</a>';
           renderThreads();
-          status.textContent = 'No conversations yet. Buyers can open an enquiry from an available listing.';
+          status.textContent = 'Inbox up to date.';
         }
       } catch (error) { fail(error); }
       finally {

@@ -85,7 +85,7 @@ test('unrelated, external, and deliberately modified links retain native navigat
   assert.equal(h.frames.length, 0);
 });
 
-test('failed frame loads expose a retry instruction and every website page wires the modal', () => {
+test('failed frame loads expose a retry instruction and the retired modal is disconnected from the website', () => {
   const h = harness();
   h.click('https://opule.test/demo.html');
   const frame = h.frames[0];
@@ -94,6 +94,20 @@ test('failed frame loads expose a retry instruction and every website page wires
   assert.equal(h.status.hidden, false);
   assert.match(h.status.textContent, /could not load/);
   for (const page of ['index', 'listing', 'sell', 'register', 'auth', 'inbox']) {
-    assert.match(readFileSync(new URL('../../' + page + '.html', import.meta.url), 'utf8'), /src="assets\/phone-preview\.js"/);
+    const html = readFileSync(new URL('../../' + page + '.html', import.meta.url), 'utf8');
+    assert.doesNotMatch(html, /src="assets\/phone-preview\.js"|href="demo\.html/);
   }
+  for (const script of ['index-page', 'listing-page', 'sell-page', 'seller-studio']) {
+    assert.doesNotMatch(readFileSync(new URL('../../assets/' + script + '.js', import.meta.url), 'utf8'), /demo\.html/);
+  }
+});
+
+test('the simulation opens directly without the retired landing screen or launch button', () => {
+  const html = readFileSync(new URL('../../demo.html', import.meta.url), 'utf8');
+  const script = readFileSync(new URL('../../assets/demo.js', import.meta.url), 'utf8');
+  assert.doesNotMatch(html, /A handover, step by step|Interactive app preview|id="open-preview"|id="simulation-summary"/);
+  assert.doesNotMatch(script, /getElementById\('(?:open-preview|simulation-summary)'\)/);
+  assert.match(html, /id="phone-dialog"/);
+  assert.match(html, /Stock portraits by/);
+  assert.match(script, /roleDialog\.showModal\(\)/);
 });

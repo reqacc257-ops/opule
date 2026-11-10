@@ -21,9 +21,7 @@
   });
   var user = OPULE.getUser();
   if (user) document.getElementById('market-account').textContent = user.name;
-  if (user && user.demo && OPULE.demoEnabled) {
-    document.getElementById('buyer-chat').href = 'demo.html?account=' + (user.role === 'seller' ? 'alex' : 'jamie') + '&live=1';
-  } else if (user) {
+  if (user) {
     document.getElementById('buyer-chat').href = 'inbox.html';
     document.getElementById('buyer-chat').textContent = 'Your messages';
   }
@@ -59,7 +57,7 @@
   document.getElementById('empty-reset').addEventListener('click', function () { filters.reset(); });
   OPULE.initPageNavigation({
     root: document.getElementById('buyer-root'), nav: document.querySelector('[aria-label="Buyer navigation"]'),
-    defaultHash: '#edit', routes: { '#edit': 'edit', '#browse': 'browse', '#collection-selection': 'browse', '#how': 'approach' },
+    defaultHash: user ? '#browse' : '#edit', routes: { '#edit': 'edit', '#browse': 'browse', '#collection-selection': 'browse', '#how': 'approach' },
     renderView: function (view) { if (view === 'browse' && !rendered) render(); },
     onChange: function (view) { document.getElementById('buyer-refinements').hidden = view !== 'browse'; }
   });

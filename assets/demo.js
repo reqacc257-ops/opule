@@ -526,14 +526,8 @@
   document.getElementById('end-simulation').addEventListener('click', async function () {
     if (!completed || operationPending) return;
     try { await stateQueue; } catch (error) { OPULE.db.report(error); return; }
-    var summary = document.getElementById('simulation-summary');
-    summary.textContent = photoAwarded
-      ? 'Simulation ended. Handover complete; 1 demo photo star earned. You have ' + stars + ' total stars and ' + Math.floor(stars / 10) + ' simulated coffee rewards. No money moved and no real voucher was issued.'
-      : 'Simulation ended. Handover complete; photo skipped, no star earned. No money moved.';
-    summary.hidden = false;
     clearPhoto();
     phoneDialog.close();
-    location.assign('index.html');
   });
   document.getElementById('reset').addEventListener('click', async function () {
     await stateQueue;
@@ -551,7 +545,6 @@
     await OPULE.db.loginDemo(chosenRole === 'buyer' ? 'jamie' : 'alex');
     demoBuyers = (await OPULE.db.all('users')).filter(function (user) { return user.role === 'buyer' && user.firstName; });
     resetAgreement();
-    document.getElementById('simulation-summary').hidden = true;
     role = chosenRole;
     selectedBuyer = demoBuyers.find(function (buyer) { return buyer.id === (chosenRole === 'seller' && buyerId ? buyerId : 'jamie'); });
     if (!selectedBuyer) throw new Error('This sample buyer is unavailable. Return to the seller studio and choose another enquiry.');
@@ -602,9 +595,6 @@
     phoneDialog.close();
     roleDialog.showModal();
   });
-  document.getElementById('open-preview').addEventListener('click', function () {
-    roleDialog.showModal();
-  });
   document.getElementById('close-preview').addEventListener('click', function () {
     phoneDialog.close();
   });
@@ -617,7 +607,7 @@
       window.parent.postMessage('opule:close-phone-preview', location.origin);
       return;
     }
-    document.getElementById('open-preview').focus();
+    location.replace('index.html');
   });
   phoneDialog.addEventListener('keydown', function (event) {
     if (event.key === 'Escape') {
@@ -627,7 +617,7 @@
   });
   roleDialog.addEventListener('cancel', function () {
     if (embedded) window.parent.postMessage('opule:close-phone-preview', location.origin);
-    document.getElementById('open-preview').focus();
+    else location.replace('index.html');
   });
   window.addEventListener('pagehide', stopCamera);
   document.getElementById('open-agreement').addEventListener('click', function () {

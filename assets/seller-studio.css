@@ -1,4 +1,6 @@
 .seller-page .market-layout { grid-template-columns: 272px minmax(0, 1fr); }
+.sample-studio .atelier-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.sample-studio .atelier-workbench.website-correspondence { grid-template-columns: minmax(0, 1fr); }
 .sample-studio-page .market-sidebar h2 { font-size: 23px; }
 .sample-studio-page .market-main { padding: 32px clamp(20px, 2.8vw, 44px) 24px; }
 .sample-studio-page .market-sidebar { min-height: calc(100vh - 140px); }

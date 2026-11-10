@@ -9,22 +9,19 @@
 
   async function renderStudio() {
     var mine = OPULE.getListings().filter(function (listing) { return listing.sellerId === user.id; });
-    var records = await Promise.all([OPULE.db.all('conversations'), OPULE.db.all('handovers')]);
-    var conversations = records[0].filter(function (row) { return row.sellerId === user.id; });
-    var handovers = records[1].filter(function (row) { return row.sellerId === user.id && !row.completed; });
+    var conversations = (await OPULE.db.all('conversations')).filter(function (row) { return row.sellerId === user.id; });
     if (user.demo === true) {
-      return OPULE.renderSampleStudio(root, user, mine, conversations, records[1]);
+      return OPULE.renderSampleStudio(root, user, mine, conversations);
     }
     root.innerHTML =
       '<section data-studio-view="overview"><div class="studio-heading"><div><p class="cap">Seller workspace' +
       '</p><h1 class="serif">Every piece has a next chapter.</h1><p>Welcome back, ' + OPULE.esc(user.name.split(' ')[0]) +
-      '. Your collection, conversations, and next handovers, in one considered space.</p></div>' +
+      '. Manage your pieces and reply to buyers, all on the website.</p></div>' +
       '<a class="btn fill" href="#new-listing">List a piece</a>' +
       '</div>' +
       '<div class="studio-metrics">' +
-      '<div class="studio-metric"><p class="cap">Listed pieces</p><strong>' + mine.length + '</strong><small>Your current collection</small></div>' +
-      '<div class="studio-metric"><p class="cap">Conversations</p><strong>' + conversations.length + '</strong><small>Started with your buyers</small></div>' +
-      '<div class="studio-metric"><p class="cap">Open handovers</p><strong>' + handovers.length + '</strong><small>Plans not yet completed</small></div>' +
+      '<div class="studio-metric"><p class="cap">Listed pieces</p><strong>' + mine.length + '</strong><small><a href="#studio-listings">Manage your collection</a></small></div>' +
+      '<div class="studio-metric"><p class="cap">Conversations</p><strong>' + conversations.length + '</strong><small><a href="#studio-enquiries">Open your messages</a></small></div>' +
       '</div></section>' +
       '<section data-studio-view="correspondence" hidden><section class="studio-section" id="studio-enquiries"><h2 class="serif">Conversations, not noise.</h2>' +
       '<div id="seller-inbox-root"></div></section></section>' +
@@ -128,7 +125,7 @@
             '<option>New</option><option>Excellent</option><option>Very good</option><option>Good</option><option>Fair</option>' +
           '</select></label>' +
           '<label class="field"><span>Your general area</span><select id="f-area">' + OPULE.areaOptions(seller.area) + '</select></label>' +
-          '<p class="form-note">Buyers only ever see the general area. Meetups are suggested roughly halfway between you and them.</p>' +
+          '<p class="form-note">Buyers only see your general area. Discuss a public meeting place together in messages.</p>' +
           '<p class="error-note" id="f-error" role="alert"></p>' +
           '<button class="btn fill" id="publish-listing" type="submit" style="margin-top:28px">List at this price</button>' +
         '</form>' +
@@ -138,7 +135,7 @@
             '<dl class="facts">' +
               '<dt>Photos</dt><dd>After creating a piece, open Manage piece to upload a JPEG, PNG or WebP photo. Up to 5 MB and 20 megapixels; metadata is removed.</dd>' +
               '<dt>Payments</dt><dd>No payments are processed or fees charged by this prototype.</dd>' +
-              '<dt>Handovers</dt><dd>The sample accounts demonstrate a simulated exchange, not real escrow.</dd>' +
+              '<dt>Messages</dt><dd>Buyers can contact you from your listing. Reply from Messages in your studio.</dd>' +
             '</dl>' +
           '</div>' +
           '<div id="listed-note"></div>' +
