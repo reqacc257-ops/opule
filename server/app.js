@@ -17,7 +17,8 @@ export function createApp(db, config) {
   app.disable('x-powered-by');
   if (config.vercel) app.set('trust proxy', 1);
   const production = config.production;
-  const demoAllowed = config.demo && !production;
+  const localDemoAllowed = config.demo && !production;
+  const demoAllowed = localDemoAllowed || config.sampleAccounts === true;
   const cookieName = production ? '__Host-opule' : 'opule_session';
   const cookieOptions = { httpOnly: true, secure: production, sameSite: 'strict', maxAge: 8 * 60 * 60 * 1000, path: '/' };
   const hashLogin = email => createHmac('sha256', config.key).update(email.trim().toLowerCase()).digest('hex');
@@ -58,12 +59,14 @@ export function createApp(db, config) {
   });
   function authenticate(req) { requireValue(req.user, 'Sign in to access your account', 401); }
   function demo(req) {
-    requireValue(demoAllowed && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress), 'Demo controls are disabled', 403);
+    const local = localDemoAllowed && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress);
+    requireValue(local || (config.sampleAccounts && req.user?.demo === true), 'Demo controls are disabled', 403);
   }
   async function participant(req, id) {
     authenticate(req);
     const row = await db.get('conversations', id);
     requireValue(row && [row.buyerId, row.sellerId].includes(req.user.id), 'Conversation not found', 404);
+    requireValue(!req.user.demo || row.demo === true, 'Sample accounts can only access sample conversations', 403);
     return row;
   }
   app.get('/api/bootstrap', async (req, res) => {
@@ -91,10 +94,12 @@ export function createApp(db, config) {
     if (match) await db.pool.query('DELETE FROM sessions WHERE token_hash=$1', [tokenHash(match.slice(cookieName.length + 1))]);
     res.clearCookie(cookieName, { ...cookieOptions, maxAge: undefined }).json({ ok: true });
   });
-  app.post('/api/demo/login', async (req, res) => {
-    demo(req);
+  app.post('/api/demo/login', authLimit, async (req, res) => {
+    if (!config.sampleAccounts) demo(req);
     requireValue(['jamie', 'alex'].includes(req.body.id), 'Choose one of the two demo accounts');
-    res.cookie(cookieName, await db.session(req.body.id), cookieOptions).json({ user: await db.get('users', req.body.id) });
+    const user = await db.get('users', req.body.id);
+    requireValue(user?.demo === true, 'Sample account is unavailable', 503);
+    res.cookie(cookieName, await db.session(user.id), cookieOptions).json({ user });
   });
   app.get('/api/records/:table', async (req, res) => {
     authenticate(req);
@@ -175,6 +180,7 @@ export function createApp(db, config) {
   });
   app.put('/api/seller', async (req, res) => {
     authenticate(req);
+    requireValue(!((production || config.sampleAccounts) && req.user.demo), 'Shared sample seller profiles cannot be changed', 403);
     requireValue(req.user.role === 'seller', 'A seller account is required', 403);
     requireValue(text(req.body.name, 100) && config.areas.includes(req.body.area) && text(req.body.email, 254) && text(req.body.phone, 30) && text(req.body.callSlot, 100), 'Enter valid seller application details');
     const prior = await db.get('sellers', req.user.id);
@@ -186,6 +192,7 @@ export function createApp(db, config) {
   });
   app.delete('/api/seller', async (req, res) => {
     demo(req); authenticate(req);
+    requireValue(!((production || config.sampleAccounts) && req.user.demo), 'Shared sample seller profiles cannot be reset', 403);
     const listings = await db.pool.query('SELECT id FROM listings WHERE seller_id=$1 LIMIT 1', [req.user.id]);
     requireValue(!listings.rows.length, 'Cannot reset a seller with existing listings', 409);
     await db.pool.query('DELETE FROM sellers WHERE id=$1', [req.user.id]);
@@ -193,6 +200,7 @@ export function createApp(db, config) {
   });
   app.post('/api/listings', async (req, res) => {
     authenticate(req);
+    requireValue(!((production || config.sampleAccounts) && req.user.demo), 'Shared sample accounts cannot publish listings', 403);
     const seller = await db.get('sellers', req.user.id);
     requireValue(seller?.status === 'verified', 'Seller approval required', 403);
     const value = req.body;

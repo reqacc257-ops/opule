@@ -24,6 +24,61 @@ test('Render Blueprint pins Node and prompts for production secrets', () => {
   assert.match(render, /key: DATA_ENCRYPTION_KEY\r?\n\s+sync: false/);
   assert.match(render, /key: DATABASE_TLS\r?\n\s+value: "true"/);
   assert.match(render, /key: ENABLE_DEMO\r?\n\s+value: "false"/);
+  assert.match(render, /key: ENABLE_SAMPLE_ACCOUNTS\r?\n\s+value: "true"/);
+});
+
+test('hosted sample accounts sign in securely and cannot change the real catalog or other conversations', async t => {
+  let currentUser = 'alex';
+  const users = {
+    alex: { id: 'alex', name: 'Alex S.', role: 'seller', demo: true },
+    jamie: { id: 'jamie', name: 'Jamie R.', role: 'buyer', demo: true },
+    real: { id: 'real', name: 'Real seller', role: 'seller', demo: false }
+  };
+  const db = {
+    all: async () => [],
+    session: async id => 'sample-session-' + id,
+    get: async (table, id) => {
+      if (table === 'users') return users[id];
+      if (table === 'conversations' && id === 'sample') return { id, buyerId: 'jamie', sellerId: 'alex', demo: true };
+      if (table === 'conversations' && id === 'private') return { id, buyerId: 'real', sellerId: 'someone-else', demo: false };
+      return null;
+    },
+    pool: { query: async sql => ({ rows: sql.includes('FROM sessions') ? [{ user_id: currentUser }] : [] }) },
+    put: async (table, value) => value
+  };
+  const app = createApp(db, {
+    root, origin: 'https://opule.onrender.com', production: true, demo: false,
+    sampleAccounts: true, key: 'a'.repeat(64), areas: ['baliwag']
+  });
+  const server = app.listen(0, '127.0.0.1');
+  await new Promise(resolve => server.once('listening', resolve));
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  const origin = `http://127.0.0.1:${server.address().port}`;
+  const headers = { Origin: 'https://opule.onrender.com', 'Content-Type': 'application/json' };
+  for (const id of ['jamie', 'alex']) {
+    const response = await fetch(origin + '/api/demo/login', { method: 'POST', headers, body: JSON.stringify({ id }) });
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).user.id, id);
+    assert.match(response.headers.get('set-cookie'), /__Host-opule=.*HttpOnly; Secure; SameSite=Strict/);
+  }
+  const invalid = await fetch(origin + '/api/demo/login', { method: 'POST', headers, body: JSON.stringify({ id: 'real' }) });
+  assert.equal(invalid.status, 400);
+  const bootstrap = await fetch(origin + '/api/bootstrap');
+  assert.equal((await bootstrap.json()).demoEnabled, true);
+  const authenticated = { ...headers, Cookie: '__Host-opule=test-token' };
+  for (const [path, method] of [['/api/listings', 'POST'], ['/api/seller', 'PUT'], ['/api/seller', 'DELETE']]) {
+    const response = await fetch(origin + path, { method, headers: authenticated, body: '{}' });
+    assert.equal(response.status, 403);
+  }
+  const privateChat = await fetch(origin + '/api/messages/private', { headers: authenticated });
+  assert.equal(privateChat.status, 404);
+  const handover = { conversationId: 'sample', buyerId: 'jamie', sellerId: 'alex', completed: false };
+  const saved = await fetch(origin + '/api/handovers/test', { method: 'PUT', headers: authenticated, body: JSON.stringify(handover) });
+  assert.equal(saved.status, 200);
+  assert.equal((await saved.json()).demo, true);
+  currentUser = 'real';
+  const realUser = await fetch(origin + '/api/handovers/test', { method: 'PUT', headers: authenticated, body: JSON.stringify(handover) });
+  assert.equal(realUser.status, 403);
 });
 
 test('Vercel builds only public pages and assets and routes every API path to the shared function', async () => {
@@ -49,6 +104,29 @@ test('runtime rejects missing database and insecure production configuration bef
   await assert.rejects(createRuntime({
     APP_ORIGIN: 'http://localhost:3000', NODE_ENV: 'production', DATABASE_TLS: 'true'
   }), /Production requires HTTPS/);
+});
+
+test('hosted samples are seeded only when explicitly enabled', async t => {
+  const statements = [];
+  const query = async sql => {
+    statements.push(sql);
+    return { rows: [] };
+  };
+  t.mock.method(pg.Pool.prototype, 'query', query);
+  t.mock.method(pg.Pool.prototype, 'connect', async () => ({ query, release() {} }));
+  const env = {
+    NODE_ENV: 'production', APP_ORIGIN: 'https://opule.onrender.com',
+    DATABASE_URL: 'postgresql://localhost/opule_test', DATA_ENCRYPTION_KEY: 'a'.repeat(64),
+    DATABASE_TLS: 'true', ENABLE_DEMO: 'false'
+  };
+  for (const enabled of [false, true]) {
+    statements.length = 0;
+    const runtime = await createRuntime({ ...env, ENABLE_SAMPLE_ACCOUNTS: String(enabled) });
+    try {
+      assert.equal(statements.some(sql => sql.startsWith('INSERT INTO users')), enabled);
+      assert.equal(statements.some(sql => sql.startsWith('INSERT INTO conversations')), enabled);
+    } finally { await runtime.pool.end(); }
+  }
 });
 
 test('Render always uses production mode even when NODE_ENV is missing or development', async t => {

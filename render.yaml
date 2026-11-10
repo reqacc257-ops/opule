@@ -17,3 +17,5 @@ services:
         value: "true"
       - key: ENABLE_DEMO
         value: "false"
+      - key: ENABLE_SAMPLE_ACCOUNTS
+        value: "true"

@@ -11,6 +11,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 
 export async function createRuntime(env = process.env) {
   const production = env.NODE_ENV === 'production' || env.RENDER === 'true';
+  const sampleAccounts = env.ENABLE_SAMPLE_ACCOUNTS === 'true';
   const origin = env.APP_ORIGIN || env.RENDER_EXTERNAL_URL;
   if (!origin || new URL(origin).origin !== origin) throw new Error('APP_ORIGIN must be an exact origin');
   if (production && (!origin.startsWith('https://') || env.DATABASE_TLS !== 'true' || env.ENABLE_DEMO === 'true')) throw new Error('Production requires HTTPS, verified database TLS, and disabled demo controls');
@@ -25,9 +26,9 @@ export async function createRuntime(env = process.env) {
   try {
     const db = store(pool, cipher);
     await pool.query(readFileSync(join(root, 'server', 'schema.sql'), 'utf8'));
-    if (env.ENABLE_DEMO === 'true' && !production) await seed(db, root);
+    if ((env.ENABLE_DEMO === 'true' && !production) || sampleAccounts) await seed(db, root);
     const areas = ['baliwag', 'pulilan', 'plaridel', 'malolos', 'calumpit', 'sanrafael', 'hagonoy', 'guiguinto', 'marilao', 'meycauayan', 'makati', 'qc', 'bgc', 'manila'];
-    const app = createApp(db, { root, origin, production, demo: env.ENABLE_DEMO === 'true', key: env.DATA_ENCRYPTION_KEY, areas, vercel: env.VERCEL === '1' });
+    const app = createApp(db, { root, origin, production, demo: env.ENABLE_DEMO === 'true', sampleAccounts, key: env.DATA_ENCRYPTION_KEY, areas, vercel: env.VERCEL === '1' });
     return { app, pool, origin, production };
   } catch (error) {
     await pool.end();

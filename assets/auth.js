@@ -1,27 +1,34 @@
 (async function () {
   'use strict';
-  await OPULE.ready;
+  var sampleStatus = document.getElementById('sample-accounts-status');
+  try { await OPULE.ready; }
+  catch (error) {
+    sampleStatus.textContent = 'Sample accounts could not be loaded. Please refresh to try again.';
+    throw error;
+  }
   document.getElementById('area').innerHTML = OPULE.areaOptions('baliwag');
   var status = document.getElementById('account-status');
   var user = OPULE.getUser();
   if (user) status.textContent = 'Signed in as ' + user.name;
   var testAccounts = document.getElementById('test-accounts');
   if (OPULE.demoEnabled) {
-    testAccounts.hidden = false;
+    sampleStatus.textContent = 'Ready to use. Choose a buyer or seller account above.';
     testAccounts.querySelectorAll('[data-demo-account]').forEach(function (button) {
+      button.disabled = false;
       button.addEventListener('click', async function () {
         testAccounts.querySelectorAll('button').forEach(function (item) { item.disabled = true; });
+        sampleStatus.textContent = 'Opening your sample account...';
         try {
           var account = button.dataset.demoAccount;
           await OPULE.db.loginDemo(account);
           location.assign('demo.html?account=' + encodeURIComponent(account) + '&live=1');
         } catch (error) {
-          status.textContent = error.message;
+          sampleStatus.textContent = error.message;
           testAccounts.querySelectorAll('button').forEach(function (item) { item.disabled = false; });
         }
       });
     });
-  }
+  } else sampleStatus.textContent = 'Sample accounts are not enabled on this server.';
   document.getElementById('account-form').addEventListener('submit', async function (event) {
     event.preventDefault();
     var action = event.submitter.value;

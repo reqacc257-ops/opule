@@ -2,6 +2,8 @@
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Opulé — Your account</title><link rel="stylesheet" href="assets/styles.css"></head>
 <body><main class="wrap section"><a class="brand" href="index.html">OPULÉ</a><h1 class="serif" style="margin:24px 0">Your account.</h1>
+<div class="account-layout">
+<div>
 <p class="form-note">Use sample details while testing. Never enter an ID or payment information.</p>
 <form id="account-form" style="max-width:460px;margin-top:24px">
 <label class="field"><span>Email</span><input id="email" type="email" maxlength="254" autocomplete="username" required></label>
@@ -12,16 +14,25 @@
 <div class="demo-actions"><button class="btn fill" type="submit" value="login">Sign in</button><button class="btn" type="submit" value="register">Create account</button><button id="logout" class="btn quiet" type="button">Sign out</button></div>
 <p id="account-status" class="form-note" role="status" style="margin-top:20px"></p>
 </form>
-</main>
-<section id="test-accounts" class="wrap section" style="padding-top:0;max-width:980px" hidden>
-<hr class="rule">
-<p class="cap">Test accounts · demo only</p>
-<h2 class="serif" style="margin:12px 0">Chat between two test accounts.</h2>
-<p class="form-note" style="max-width:640px">Open Jamie and Alex in separate browser profiles (for example, your regular window and a private window) to keep their sign-ins separate. Messages sync through the local demo server. No real accounts or payments are involved.</p>
-<div class="demo-actions" style="margin-top:20px">
-<button class="btn fill" type="button" data-demo-account="jamie">Open Jamie · Buyer</button>
-<button class="btn" type="button" data-demo-account="alex">Open Alex · Seller</button>
 </div>
-</section>
+<aside id="test-accounts" class="sample-accounts" aria-labelledby="sample-accounts-heading">
+<p class="cap">Try the app</p>
+<h2 id="sample-accounts-heading" class="serif">Two accounts. Ready to explore.</h2>
+<p class="form-note">No email or password needed. Choose a fictional account to try the sample chat and handover.</p>
+<article class="sample-account">
+<img src="assets/images/demo-buyer.jpg" width="56" height="56" alt="Stock portrait for fictional buyer Jamie">
+<div><p class="cap">Sample buyer</p><h3>Jamie R.</h3><p class="form-note">Browse the piece, chat with Alex, and try a handover.</p></div>
+<button class="btn fill" type="button" data-demo-account="jamie" disabled>Use buyer account</button>
+</article>
+<article class="sample-account">
+<img src="assets/images/demo-seller.jpg" width="56" height="56" alt="Stock portrait for fictional seller Alex">
+<div><p class="cap">Sample seller</p><h3>Alex S.</h3><p class="form-note">Explore buyer enquiries and the seller side of the chat.</p></div>
+<button class="btn" type="button" data-demo-account="alex" disabled>Use seller account</button>
+</article>
+<p id="sample-accounts-status" class="form-note" role="status">Checking sample account availability...</p>
+<p class="form-note">Shared test accounts: other visitors can see sample messages. Never enter personal information. To test both sides, use separate browser profiles or a private window. No real payments or verification.</p>
+</aside>
+</div>
+</main>
 <script src="assets/app.js"></script><script src="assets/database.js"></script><script src="assets/auth.js"></script></body>
 </html>

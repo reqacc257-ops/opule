@@ -185,7 +185,6 @@
     var ownConfirmed = isBuyer ? sellerConfirmed : buyerConfirmed;
     var otherName = isBuyer ? 'seller' : 'buyer';
     document.getElementById('offer-participants').textContent = 'Jamie R. & Alex S. · you are ' + (isBuyer ? 'Jamie (buyer)' : 'Alex (seller)');
-    if (!isBuyer) document.getElementById('offer-participants').textContent = selectedBuyer.name + ' & Alex S. · you are Alex (seller)';
     document.getElementById('open-agreement').textContent = ownAgreement ? 'View agreement · waiting for ' + otherName : 'Agree together';
     var chatting = chatAvailable() && !otherAgreement && !completed;
     if (!selectedBuyer) {
@@ -195,6 +194,7 @@
       document.querySelector('.demo-progress').hidden = true;
       return;
     }
+    if (!isBuyer) document.getElementById('offer-participants').textContent = selectedBuyer.name + ' & Alex S. · you are Alex (seller)';
     phoneDialog.classList.toggle('buyer-messenger', isBuyer && chatting);
     document.getElementById('seller-inbox').hidden = role !== 'seller' || !sellerInboxOpen;
     document.getElementById('agreement-step').hidden = !chatAvailable() || (ownAgreement && otherAgreement) || completed;

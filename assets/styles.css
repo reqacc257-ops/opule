@@ -256,6 +256,21 @@ dl.facts dd { color: var(--ink); }
 
 /* ---------- forms ---------- */
 
+.account-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: start; }
+.sample-accounts { padding: 28px; border: 1px solid var(--line); background: var(--panel); }
+.sample-accounts h2 { font-size: 30px; line-height: 1.2; margin: 12px 0; }
+.sample-account { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 16px; padding: 24px 0; border-bottom: 1px solid var(--line); }
+.sample-account img { border-radius: 50%; object-fit: cover; }
+.sample-account .cap { font-size: 11px; letter-spacing: .1em; }
+.sample-account h3 { font-size: 22px; margin: 4px 0; }
+.sample-account .btn { grid-column: 1 / -1; width: 100%; }
+.sample-accounts > .form-note { margin-top: 16px; }
+.sample-account .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+@media (max-width: 900px) {
+  .account-layout { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .sample-accounts { padding: 24px; }
+}
+
 label.field { display: block; margin-bottom: 24px; }
 label.field > span {
   display: block;
