@@ -183,6 +183,16 @@ test('deployment image policies allow every source thumbnail without allowing ar
   assert.doesNotMatch(img, /\*|(?:^| )https:(?: |$)/);
 });
 
+test('discovery has aligned actions and narrow-screen safe-area layouts', () => {
+  const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
+  assert.match(html, /viewport-fit=cover/);
+  const css = readFileSync(new URL('../../assets/discovery.css', import.meta.url), 'utf8');
+  assert.match(css, /\.local-edit-actions \{ display: grid; grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+  assert.match(css, /safe-area-inset-bottom/);
+  assert.match(css, /@media \(max-width: 480px\)/);
+  assert.match(css, /\.discovery-grid \{ grid-template-columns: minmax\(0, 1fr\); \}/);
+});
+
 test('store search uses shared full-height controls with theme-aware placeholders', () => {
   const styles = readFileSync(new URL('../../assets/styles.css', import.meta.url), 'utf8');
   assert.match(styles, /input\[type="text"\], input\[type="search"\][^{]+\{[^}]+min-height: 48px;/);

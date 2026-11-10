@@ -77,8 +77,8 @@
 .local-edit-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 22px; }
 .local-edit-heading h2 { margin: 8px 0; font-size: clamp(24px, 3vw, 34px); font-weight: 400; line-height: 1.2; }
 .local-edit-heading p:not(.cap) { max-width: 56ch; margin: 0; color: var(--text-secondary); font-size: 13px; line-height: 1.7; }
-.local-edit-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.local-edit-actions .btn { min-height: 44px; font-size: 12px; }
+.local-edit-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-items: stretch; min-width: 0; }
+.local-edit-actions .btn { width: 100%; min-width: 0; min-height: 48px; padding: 12px 18px; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
 .featured-ph-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .featured-ph-card { display: grid; grid-template-columns: minmax(90px, 34%) 1fr; min-width: 0; border: 1px solid var(--line); background: var(--surface); }
 .featured-ph-art { display: block; min-width: 0; aspect-ratio: 1; overflow: hidden; background: #fff; }
@@ -144,7 +144,44 @@
 .discovery-page .market-empty h3 { font-size: 24px; margin-bottom: 12px; }
 .discovery-page #discovery-status:not(:empty) { padding: 16px; border: 1px solid var(--control-line); margin-top: 16px; }
 @media (max-width: 760px) {
+  .discovery-page .market-header { padding-top: max(16px, env(safe-area-inset-top)); padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+  .discovery-page .market-main, .discovery-page .market-sidebar { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+  .discovery-page .market-main { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+  .discovery-page .market-sidebar .workspace-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .discovery-page .workspace-nav a { min-height: 48px; font-size: 12px; }
+  .gentry-feature-heading, .local-edit-heading { gap: 20px; }
+  .gentry-feature-heading > div:first-child { flex-basis: 100%; min-width: 0; }
+  .local-edit-actions { width: 100%; }
+  .gentry-feature h2, .local-edit-heading h2, .discovery-heading { overflow-wrap: anywhere; }
+  .discovery-page .collection-toolbar { align-items: stretch; flex-direction: column; gap: 12px; }
+  .discovery-page .collection-toolbar label.field { width: 100%; }
+  .discovery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .discovery-actions { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .discovery-actions .btn { width: 100%; min-height: 48px; }
+  .store-filters { align-items: stretch; }
+  .store-filters .field { flex-basis: 100%; }
+  .store-filters > .btn { width: 100%; min-height: 48px; }
+  .store-directory article { padding: 20px; }
+  .store-directory .btn { display: flex; width: 100%; min-height: 48px; margin: 12px 0 0; }
+  .discovery-pagination { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; }
+  .discovery-pagination .btn { padding: 10px 8px; min-height: 48px; min-width: 0; }
+  .discovery-page input, .discovery-page select { font-size: 16px; }
   .store-directory { grid-template-columns: minmax(0, 1fr); }
   .discovery-card-copy { padding: 16px; }
   .discovery-grid { gap: 20px 12px; }
+}
+@media (max-width: 480px) {
+  .local-edit-actions { grid-template-columns: minmax(0, 1fr); }
+  .discovery-grid { grid-template-columns: minmax(0, 1fr); }
+  .discovery-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gentry-feature, .local-edit { padding: 16px; }
+}
+@media (max-width: 340px) {
+  .discovery-page .market-header { grid-template-columns: minmax(0, 1fr) auto; }
+  .discovery-page .market-header > .brand { grid-column: 1; justify-self: start; font-size: 26px; }
+  .discovery-page .theme-toggle { grid-column: 2; }
+  .featured-ph-card { grid-template-columns: 72px minmax(0, 1fr); }
+  .featured-ph-art { width: 72px; height: 90px; }
+  .featured-ph-copy { padding: 8px; }
+  .approach-grid { grid-template-columns: minmax(0, 1fr); }
 }
