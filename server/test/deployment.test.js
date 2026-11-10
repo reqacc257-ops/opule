@@ -51,6 +51,31 @@ test('runtime rejects missing database and insecure production configuration bef
   }), /Production requires HTTPS/);
 });
 
+test('Render always uses production mode even when NODE_ENV is missing or development', async t => {
+  t.mock.method(pg.Pool.prototype, 'query', async () => ({ rows: [] }));
+  for (const nodeEnv of [undefined, 'development', 'production']) {
+    const env = {
+      RENDER: 'true',
+      RENDER_EXTERNAL_URL: 'https://opule.onrender.com',
+      DATABASE_URL: 'postgresql://localhost/opule_test',
+      DATA_ENCRYPTION_KEY: 'a'.repeat(64),
+      DATABASE_TLS: 'true',
+      ENABLE_DEMO: 'false',
+      ...(nodeEnv ? { NODE_ENV: nodeEnv } : {})
+    };
+    const runtime = await createRuntime(env);
+    try {
+      assert.equal(runtime.production, true);
+      assert.equal(runtime.origin, env.RENDER_EXTERNAL_URL);
+      assert.equal(runtime.pool.options.ssl.rejectUnauthorized, true);
+    } finally {
+      await runtime.pool.end();
+    }
+    await assert.rejects(createRuntime({ ...env, ENABLE_DEMO: 'true' }), /Production requires HTTPS/);
+    await assert.rejects(createRuntime({ ...env, DATABASE_TLS: 'false' }), /Production requires HTTPS/);
+  }
+});
+
 test('function startup failures return uncached JSON and allow initialization to be retried', async t => {
   const previous = process.env.APP_ORIGIN;
   delete process.env.APP_ORIGIN;

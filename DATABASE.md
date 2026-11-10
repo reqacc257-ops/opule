@@ -22,6 +22,8 @@ The root [render.yaml](render.yaml) Blueprint configures a Node.js web service w
 
 The Blueprint sets `NODE_ENV=production`, `DATABASE_TLS=true`, and `ENABLE_DEMO=false`. Render supplies `PORT` and `RENDER_EXTERNAL_URL`; the server listens on the supplied port and uses the Render URL as its allowed origin. If you add a custom domain, set `APP_ORIGIN` in the Render service environment to that exact HTTPS origin (no trailing slash). Optionally set `DATABASE_CA_FILE` to the path of a trusted CA certificate if your PostgreSQL provider requires a custom CA.
 
+The server also recognizes Render's automatic `RENDER=true` flag and enforces production mode there even if `NODE_ENV` is accidentally set to `development`. Production listens on `0.0.0.0`; local development listens on `127.0.0.1`. Startup logs include the bound address and port. If Render reports ports only on localhost, set `NODE_ENV=production` in the web service's Environment settings and redeploy the latest code.
+
 Use Render's Environment page or the Blueprint prompts for secrets; never put production values in `render.yaml` or commit them to `.env`. Use a PostgreSQL service with persistent storage; a free web service can sleep between requests, so select a paid web-service plan if you need always-on behavior. The first successful server startup initializes the schema. After deploy, confirm `/api/health` returns `{"ok":true}`.
 
 ## Vercel deployment

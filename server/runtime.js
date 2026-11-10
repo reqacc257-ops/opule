@@ -10,7 +10,7 @@ import { createApp } from './app.js';
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 
 export async function createRuntime(env = process.env) {
-  const production = env.NODE_ENV === 'production';
+  const production = env.NODE_ENV === 'production' || env.RENDER === 'true';
   const origin = env.APP_ORIGIN || env.RENDER_EXTERNAL_URL;
   if (!origin || new URL(origin).origin !== origin) throw new Error('APP_ORIGIN must be an exact origin');
   if (production && (!origin.startsWith('https://') || env.DATABASE_TLS !== 'true' || env.ENABLE_DEMO === 'true')) throw new Error('Production requires HTTPS, verified database TLS, and disabled demo controls');
