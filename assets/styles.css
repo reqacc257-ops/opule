@@ -266,7 +266,7 @@ label.field > span {
   margin-bottom: 8px;
 }
 
-input[type="text"], input[type="tel"], input[type="email"], input[type="number"],
+input[type="text"], input[type="password"], input[type="tel"], input[type="email"], input[type="number"],
 input[type="date"], select, textarea {
   width: 100%;
   background: var(--charcoal);
