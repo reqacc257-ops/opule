@@ -62,6 +62,8 @@ Foreign keys enforce relationships. Message/reward writes are transactional. Pub
 
 ## Encryption and boundaries
 
+Browser scripts and the Bodoni Moda/Hanken Grotesk variable fonts are served from `assets`, not third-party CDNs. Font license notices are retained in `assets/fonts`. Page scripts are external same-origin files; inline event handlers and evaluated scripts are blocked by CSP. Both Express and Vercel static responses enforce `script-src 'self'` and `script-src-attr 'none'`. Inline styles remain allowed for the current page templates. Dynamic HTML rendering still uses escaped values; a scanner's generic `innerHTML` warning is not by itself proof of XSS.
+
 All record JSON payloads, including messages and seller application fields, use AES-256-GCM with a random nonce and record-specific authenticated context. This is **server-side encryption, not end-to-end encryption**: the server can decrypt records. Relationship IDs, role/status flags, timestamps, password hashes and session-token hashes remain queryable metadata.
 
 Production also requires HTTPS at a trusted reverse proxy, verified PostgreSQL TLS (`DATABASE_TLS=true` plus a trusted CA if needed), encrypted disks/backups, restricted database networking, secret management, key backups/rotation, and a least-privilege runtime role. Database connection strings must not contain SSL override parameters. The server refuses insecure production flags; public sample login/simulation requires the explicit `ENABLE_SAMPLE_ACCOUNTS` setting.

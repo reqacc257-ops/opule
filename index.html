@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Opulé — The luxury resale app</title>
 <meta name="description" content="Discover the Opulé mobile app: buy and sell verified luxury pieces with secure, in-person handovers.">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400..700&family=Hanken+Grotesk:wght@400..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 <script src="assets/loading.js" defer></script>
 </head>
@@ -109,25 +107,7 @@
 
 <script src="assets/app.js"></script>
 <script src="assets/database.js"></script>
-<script>
-(async function () {
-  await OPULE.ready;
-  var listings = OPULE.getListings();
-  var rows = listings.map(function (l) {
-    var area = OPULE.areaById(l.area);
-    return '<a class="row" href="listing.html?id=' + l.id + '">' +
-      '<span class="product-photo"><img class="ph" src="' + OPULE.esc(l.image || '') + '" alt="Illustrative stock photo, not the exact ' + OPULE.esc(l.title) + '" loading="lazy"><span class="photo-badge">Stock photo</span></span>' +
-      '<span class="t"><h3>' + OPULE.esc(l.title) + '</h3><p>' + OPULE.esc(l.meta || '') + '</p></span>' +
-      '<span class="meta">' + (l.sample ? 'Test area · ' : 'Seller verified · ') + (area ? OPULE.esc(area.name) : '') + '</span>' +
-      '<span class="meta">' + OPULE.esc(l.category || '') + '</span>' +
-      '<span class="price serif">' + OPULE.peso(l.price) + '</span>' +
-      '</a>';
-  }).join('');
-  document.getElementById('ledger').innerHTML = rows;
-  document.getElementById('ledger').setAttribute('aria-busy', 'false');
-  document.getElementById('listing-count').textContent = listings.length + ' items';
-})().catch(OPULE.db.report);
-</script>
+<script src="assets/index-page.js"></script>
 
 </body>
 </html>

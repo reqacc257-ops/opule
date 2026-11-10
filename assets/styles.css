@@ -3,6 +3,22 @@
    Type: Bodoni Moda (headlines) · Hanken Grotesk (body)
    Square corners. Gold is rare. Bronze never carries text. */
 
+@font-face {
+  font-family: 'Bodoni Moda';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('fonts/bodoni-moda.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Hanken Grotesk';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('fonts/hanken-grotesk.ttf') format('truetype');
+}
+
 :root {
   --charcoal: #1C1D1F;
   --panel: #232427;

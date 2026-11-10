@@ -1,8 +1,7 @@
 import express from 'express';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
-import { createHash, createHmac } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { createHmac } from 'node:crypto';
 import { join } from 'node:path';
 import { passwordHash, passwordMatches, tokenHash } from './crypto.js';
 
@@ -23,15 +22,11 @@ export function createApp(db, config) {
   const cookieOptions = { httpOnly: true, secure: production, sameSite: 'strict', maxAge: 8 * 60 * 60 * 1000, path: '/' };
   const hashLogin = email => createHmac('sha256', config.key).update(email.trim().toLowerCase()).digest('hex');
   const htmlFiles = ['index.html', 'listing.html', 'register.html', 'sell.html', 'demo.html', 'auth.html'];
-  const scriptHashes = htmlFiles.flatMap(file => {
-    const html = readFileSync(join(config.root, file), 'utf8');
-    return [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match => `'sha256-${createHash('sha256').update(match[1]).digest('base64')}'`);
-  });
   app.use(helmet({
     strictTransportSecurity: production ? undefined : false,
     contentSecurityPolicy: { directives: {
-      defaultSrc: ["'self'"], scriptSrc: ["'self'", ...scriptHashes], styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      fontSrc: ["'self'", 'https://fonts.gstatic.com'], imgSrc: ["'self'", 'data:'], mediaSrc: ["'self'", 'blob:'],
+      defaultSrc: ["'self'"], scriptSrc: ["'self'"], scriptSrcAttr: ["'none'"], styleSrc: ["'self'", "'unsafe-inline'"],
+      fontSrc: ["'self'"], imgSrc: ["'self'", 'data:'], mediaSrc: ["'self'", 'blob:'],
       connectSrc: ["'self'"], objectSrc: ["'none'"], frameAncestors: ["'none'"], baseUri: ["'self'"],
       upgradeInsecureRequests: production ? [] : null
     } }

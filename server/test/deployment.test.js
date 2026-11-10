@@ -11,6 +11,30 @@ import handler from '../../api/index.js';
 
 const root = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 
+test('pages use same-origin scripts and fonts without inline executable markup', () => {
+  for (const file of ['index.html', 'listing.html', 'register.html', 'sell.html', 'demo.html', 'auth.html']) {
+    const html = readFileSync(join(root, file), 'utf8');
+    assert.doesNotMatch(html, /<script(?![^>]*\bsrc=)[^>]*>/i, file);
+    assert.doesNotMatch(html, /\bon\w+\s*=/i, file);
+    assert.doesNotMatch(html, /(?:src|href)=["']https?:\/\/[^"']+["'][^>]*(?:rel=["']stylesheet|><\/script>)/i, file);
+    assert.doesNotMatch(html, /fonts\.googleapis\.com|fonts\.gstatic\.com/, file);
+  }
+  for (const name of ['index', 'listing', 'register', 'sell']) {
+    const script = readFileSync(join(root, 'assets', name + '-page.js'), 'utf8');
+    assert.doesNotMatch(script, /\bonclick\s*=|javascript:|\beval\s*\(|new Function\s*\(/i, name);
+  }
+  const styles = readFileSync(join(root, 'assets', 'styles.css'), 'utf8');
+  for (const font of ['bodoni-moda.ttf', 'hanken-grotesk.ttf']) {
+    assert.ok(styles.includes(`fonts/${font}`));
+    const bytes = readFileSync(join(root, 'assets', 'fonts', font));
+    assert.equal(bytes.readUInt32BE(0), 0x00010000, 'Valid TrueType font');
+  }
+  const vercel = JSON.parse(readFileSync(join(root, 'vercel.json'), 'utf8'));
+  const csp = vercel.headers[0].headers.find(header => header.key === 'Content-Security-Policy').value;
+  assert.match(csp, /script-src 'self'; script-src-attr 'none'/);
+  assert.match(csp, /font-src 'self'/);
+});
+
 test('Render Blueprint pins Node and prompts for production secrets', () => {
   const packageJson = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
   const render = readFileSync(join(root, 'render.yaml'), 'utf8');
@@ -214,6 +238,17 @@ test('API routes serve JSON, protect private operations, and serve CSS without e
   assert.equal(css.status, 200);
   assert.match(css.headers.get('content-type'), /text\/css/);
   assert.equal(await css.text(), readFileSync(join(root, 'assets', 'styles.css'), 'utf8'));
+  const html = await fetch(origin + '/');
+  assert.equal(html.status, 200);
+  const csp = html.headers.get('content-security-policy');
+  assert.match(csp, /script-src 'self';/);
+  assert.match(csp, /script-src-attr 'none'/);
+  assert.doesNotMatch(csp, /unsafe-eval|fonts\.googleapis|fonts\.gstatic|sha256-/);
+  for (const path of ['/assets/index-page.js', '/assets/fonts/bodoni-moda.ttf', '/assets/fonts/hanken-grotesk.ttf']) {
+    const response = await fetch(origin + path);
+    assert.equal(response.status, 200);
+    await response.arrayBuffer();
+  }
   for (const path of ['/api/missing', '/server/runtime.js', '/.env', '/DATABASE.md']) {
     const response = await fetch(origin + path);
     assert.equal(response.status, 404);
