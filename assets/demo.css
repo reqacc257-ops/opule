@@ -16,6 +16,11 @@
   color-scheme: dark;
 }
 .handover-page select { color-scheme: dark; }
+.embedded-preview > .wrap:not(.handover-demo),
+.embedded-preview .handover-demo > :not(dialog) { display: none; }
+.embedded-preview .handover-demo { padding: 0; }
+.embedded-preview .phone-dialog::backdrop,
+.embedded-preview .role-dialog::backdrop { background: transparent; backdrop-filter: none; }
 .handover-demo { padding-bottom: 64px; }
 .role-dialog { width: min(480px, calc(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right))); margin: auto; padding: 32px; background: var(--panel); color: var(--ink); border: 1px solid var(--bronze); }
 .role-dialog::backdrop { background: #000b; }

@@ -1,5 +1,28 @@
 /* Bodoni is reserved for brand marks; interface and editorial type use Hanken. */
 
+.phone-preview-modal {
+  width: min(460px, calc(100vw - 16px));
+  height: min(940px, calc(100dvh - 16px));
+  max-width: none;
+  max-height: none;
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--control-line);
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--text);
+  overflow: hidden;
+}
+.phone-preview-modal[open] { display: flex; flex-direction: column; }
+.phone-preview-modal::backdrop { background: #20201e99; backdrop-filter: blur(6px); }
+body:has(.phone-preview-modal[open]) { overflow: hidden; }
+.phone-preview-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px; }
+.phone-preview-toolbar h2 { font: 500 14px var(--font-display); }
+.phone-preview-toolbar button { min-height: 44px; }
+.phone-preview-modal iframe { display: block; flex: 1; width: 100%; min-height: 0; border: 0; }
+.phone-preview-status { padding: 12px 16px; font-size: 13px; }
+.phone-preview-status[hidden] { display: none; }
+
 @font-face {
   font-family: 'Bodoni Moda';
   font-style: normal;

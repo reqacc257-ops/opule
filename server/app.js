@@ -24,14 +24,19 @@ export function createApp(db, config) {
   const hashLogin = email => createHmac('sha256', config.key).update(email.trim().toLowerCase()).digest('hex');
   const htmlFiles = ['index.html', 'listing.html', 'register.html', 'sell.html', 'demo.html', 'auth.html', 'inbox.html'];
   app.use(helmet({
+    xFrameOptions: false,
     strictTransportSecurity: production ? undefined : false,
     contentSecurityPolicy: { directives: {
       defaultSrc: ["'self'"], scriptSrc: ["'self'"], scriptSrcAttr: ["'none'"], styleSrc: ["'self'", "'unsafe-inline'"],
       fontSrc: ["'self'"], imgSrc: ["'self'", 'data:'], mediaSrc: ["'self'", 'blob:'],
-      connectSrc: ["'self'"], objectSrc: ["'none'"], frameAncestors: ["'none'"], baseUri: ["'self'"],
+      connectSrc: ["'self'"], objectSrc: ["'none'"], frameAncestors: [req => req.path === '/demo.html' ? "'self'" : "'none'"], baseUri: ["'self'"],
       upgradeInsecureRequests: production ? [] : null
     } }
   }));
+  app.use((req, res, next) => {
+    res.set('X-Frame-Options', req.path === '/demo.html' ? 'SAMEORIGIN' : 'DENY');
+    next();
+  });
   function rateLimitResponse(req, res) {
     res.set('Cache-Control', 'no-store').status(429).json({ error: 'Too many requests. Please wait and try again.' });
   }

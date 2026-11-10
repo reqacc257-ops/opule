@@ -33,6 +33,10 @@ test('pages use same-origin scripts and fonts without inline executable markup',
   const csp = vercel.headers[0].headers.find(header => header.key === 'Content-Security-Policy').value;
   assert.match(csp, /script-src 'self'; script-src-attr 'none'/);
   assert.match(csp, /font-src 'self'/);
+  const demoHeaders = vercel.headers.find(rule => rule.source === '/demo.html').headers;
+  assert.match(demoHeaders.find(header => header.key === 'Content-Security-Policy').value, /frame-ancestors 'self'/);
+  assert.equal(demoHeaders.find(header => header.key === 'X-Frame-Options').value, 'SAMEORIGIN');
+  assert.match(csp, /frame-ancestors 'none'/);
 });
 
 test('Render Blueprint pins Node and prompts for production secrets', () => {
@@ -258,6 +262,13 @@ test('API routes serve JSON, protect private operations, and serve CSS without e
   const html = await fetch(origin + '/');
   assert.equal(html.status, 200);
   const csp = html.headers.get('content-security-policy');
+  assert.match(csp, /frame-ancestors 'none'/);
+  assert.equal(html.headers.get('x-frame-options'), 'DENY');
+  const preview = await fetch(origin + '/demo.html?embedded=1');
+  assert.equal(preview.status, 200);
+  assert.match(preview.headers.get('content-security-policy'), /frame-ancestors 'self'/);
+  assert.equal(preview.headers.get('x-frame-options'), 'SAMEORIGIN');
+  await preview.text();
   assert.match(csp, /script-src 'self';/);
   assert.match(csp, /script-src-attr 'none'/);
   assert.doesNotMatch(csp, /unsafe-eval|fonts\.googleapis|fonts\.gstatic|sha256-/);

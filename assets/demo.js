@@ -1,5 +1,15 @@
 (async function () {
   'use strict';
+  var embedded = window.parent !== window && new URLSearchParams(location.search).get('embedded') === '1';
+  if (embedded) {
+    document.body.classList.add('embedded-preview');
+    document.addEventListener('click', function (event) {
+      var link = event.target.closest('a[href="index.html"]');
+      if (!link) return;
+      event.preventDefault();
+      window.parent.postMessage('opule:close-phone-preview', location.origin);
+    });
+  }
   await OPULE.ready;
 
   var radius = 30;
@@ -603,6 +613,10 @@
     if (scheduleDialog.open) scheduleDialog.close();
     clearPhoto();
     if (roleDialog.open) return;
+    if (embedded) {
+      window.parent.postMessage('opule:close-phone-preview', location.origin);
+      return;
+    }
     document.getElementById('open-preview').focus();
   });
   phoneDialog.addEventListener('keydown', function (event) {
@@ -612,6 +626,7 @@
     }
   });
   roleDialog.addEventListener('cancel', function () {
+    if (embedded) window.parent.postMessage('opule:close-phone-preview', location.origin);
     document.getElementById('open-preview').focus();
   });
   window.addEventListener('pagehide', stopCamera);
