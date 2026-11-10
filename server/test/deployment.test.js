@@ -12,7 +12,7 @@ import handler from '../../api/index.js';
 const root = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 
 test('pages use same-origin scripts and fonts without inline executable markup', () => {
-  for (const file of ['index.html', 'listing.html', 'register.html', 'sell.html', 'demo.html', 'auth.html']) {
+  for (const file of ['index.html', 'listing.html', 'register.html', 'sell.html', 'demo.html', 'auth.html', 'inbox.html']) {
     const html = readFileSync(join(root, file), 'utf8');
     assert.doesNotMatch(html, /<script(?![^>]*\bsrc=)[^>]*>/i, file);
     assert.doesNotMatch(html, /\bon\w+\s*=/i, file);
@@ -49,6 +49,7 @@ test('Render Blueprint pins Node and prompts for production secrets', () => {
   assert.match(render, /key: DATABASE_TLS\r?\n\s+value: "true"/);
   assert.match(render, /key: ENABLE_DEMO\r?\n\s+value: "false"/);
   assert.match(render, /key: ENABLE_SAMPLE_ACCOUNTS\r?\n\s+value: "true"/);
+  assert.match(readFileSync(join(root, '.env.example'), 'utf8'), /^ENABLE_SAMPLE_ACCOUNTS=true$/m);
 });
 
 test('hosted sample accounts sign in securely and cannot change the real catalog or other conversations', async t => {
@@ -128,7 +129,7 @@ test('Vercel builds only public pages and assets and routes every API path to th
   assert.ok(config.functions['api/index.js'].includeFiles.includes('server/**'));
   await import('../build-static.js');
   const output = join(root, config.outputDirectory);
-  assert.deepEqual(readdirSync(output).sort(), ['assets', 'auth.html', 'demo.html', 'index.html', 'listing.html', 'register.html', 'sell.html']);
+  assert.deepEqual(readdirSync(output).sort(), ['assets', 'auth.html', 'demo.html', 'inbox.html', 'index.html', 'listing.html', 'register.html', 'sell.html']);
   for (const file of readdirSync(output).filter(file => file.endsWith('.html'))) {
     const html = readFileSync(join(output, file), 'utf8');
     for (const match of html.matchAll(/(?:src|href)="(assets\/[^"]+)"/g)) {

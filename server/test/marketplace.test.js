@@ -51,6 +51,11 @@ function harness(overrides = {}) {
     db: { report: error => errors.push(error), all: async () => [] },
     ...overrides
   };
+  OPULE.renderListingManagement = (catalog, rows) => {
+    catalog.replaceChildren();
+    rows.forEach(row => catalog.appendChild(OPULE.listingCard(row)));
+  };
+  OPULE.renderInbox = () => {};
   const document = {
     body: new Element(), createElement: () => new Element(), createDocumentFragment: () => new Element(true),
     getElementById: element, querySelector: element, querySelectorAll: () => []

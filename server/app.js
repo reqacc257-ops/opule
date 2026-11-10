@@ -4,6 +4,7 @@ import { rateLimit } from 'express-rate-limit';
 import { createHmac } from 'node:crypto';
 import { join } from 'node:path';
 import { passwordHash, passwordMatches, tokenHash } from './crypto.js';
+import { installMarketplace, listingVisible } from './marketplace.js';
 
 class HttpError extends Error {
   constructor(status, message) { super(message); this.status = status; }
@@ -21,7 +22,7 @@ export function createApp(db, config) {
   const cookieName = production ? '__Host-opule' : 'opule_session';
   const cookieOptions = { httpOnly: true, secure: production, sameSite: 'strict', maxAge: 8 * 60 * 60 * 1000, path: '/' };
   const hashLogin = email => createHmac('sha256', config.key).update(email.trim().toLowerCase()).digest('hex');
-  const htmlFiles = ['index.html', 'listing.html', 'register.html', 'sell.html', 'demo.html', 'auth.html'];
+  const htmlFiles = ['index.html', 'listing.html', 'register.html', 'sell.html', 'demo.html', 'auth.html', 'inbox.html'];
   app.use(helmet({
     strictTransportSecurity: production ? undefined : false,
     contentSecurityPolicy: { directives: {
@@ -35,6 +36,7 @@ export function createApp(db, config) {
     res.set('Cache-Control', 'no-store').status(429).json({ error: 'Too many requests. Please wait and try again.' });
   }
   app.use('/api', rateLimit({ windowMs: 60_000, limit: 300, standardHeaders: 'draft-8', legacyHeaders: false, handler: rateLimitResponse }));
+  app.use('/api/listings/:id/photo', express.json({ limit: '8mb' }));
   app.use(express.json({ limit: '32kb' }));
   app.use('/api', async (req, res, next) => {
     try {
@@ -67,7 +69,7 @@ export function createApp(db, config) {
     return row;
   }
   app.get('/api/bootstrap', async (req, res) => {
-    res.json({ listings: await db.all('listings'), venues: await db.all('venues'), user: req.user || null, demoEnabled: demoAllowed, localDemoEnabled: localDemo(req) });
+    res.json({ listings: (await db.all('listings')).filter(listing => listingVisible(listing, req.user)), venues: await db.all('venues'), user: req.user || null, demoEnabled: demoAllowed, localDemoEnabled: localDemo(req) });
   });
   const authLimit = rateLimit({ windowMs: 15 * 60_000, limit: 15, standardHeaders: 'draft-8', legacyHeaders: false, handler: rateLimitResponse });
   app.post('/api/auth/register', authLimit, async (req, res) => {
@@ -120,8 +122,8 @@ export function createApp(db, config) {
   });
   app.get('/api/messages/:conversationId', async (req, res) => {
     await participant(req, req.params.conversationId);
-    const result = await db.pool.query('SELECT * FROM messages WHERE conversation_id=$1 ORDER BY created_at,id LIMIT 500', [req.params.conversationId]);
-    res.json(result.rows.map(row => db.decode('messages', row)));
+    const result = await db.pool.query('SELECT * FROM messages WHERE conversation_id=$1 ORDER BY created_at DESC,id DESC LIMIT 500', [req.params.conversationId]);
+    res.json(result.rows.reverse().map(row => db.decode('messages', row)));
   });
   app.post('/api/messages/:conversationId', async (req, res) => {
     const conversation = await participant(req, req.params.conversationId);
@@ -195,17 +197,7 @@ export function createApp(db, config) {
     await db.pool.query('DELETE FROM sellers WHERE id=$1', [req.user.id]);
     res.json({ ok: true });
   });
-  app.post('/api/listings', async (req, res) => {
-    authenticate(req);
-    requireValue(!((production || config.sampleAccounts) && req.user.demo), 'Shared sample accounts cannot publish listings', 403);
-    const seller = await db.get('sellers', req.user.id);
-    requireValue(seller?.status === 'verified', 'Seller approval required', 403);
-    const value = req.body;
-    requireValue(text(value.title, 200) && Number.isSafeInteger(value.price) && value.price >= 1000 && value.price <= 100000000 && config.areas.includes(value.area), 'Invalid listing');
-    const listing = { id: 'U' + db.id(), title: value.title.trim(), price: value.price, category: value.category, meta: value.meta, condition: value.condition, area: value.area, sellerId: req.user.id, mine: true, createdAt: new Date().toISOString() };
-    await db.put('listings', listing, { seller_id: req.user.id });
-    res.status(201).json(listing);
-  });
+  installMarketplace(app, db, config, { authenticate, requireValue, text });
   app.get('/api/health', async (req, res) => { await db.pool.query('SELECT 1'); res.json({ ok: true }); });
   app.use('/assets', express.static(join(config.root, 'assets'), { dotfiles: 'deny' }));
   for (const file of htmlFiles) app.get(file === 'index.html' ? ['/', '/index.html'] : '/' + file, (req, res) => res.sendFile(join(config.root, file)));

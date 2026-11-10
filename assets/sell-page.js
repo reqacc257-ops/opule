@@ -16,7 +16,7 @@
       return OPULE.renderSampleStudio(root, user, mine, conversations, records[1]);
     }
     root.innerHTML =
-      '<section data-studio-view="overview"><div class="studio-heading"><div><p class="cap">Verified seller workspace' +
+      '<section data-studio-view="overview"><div class="studio-heading"><div><p class="cap">Seller workspace' +
       '</p><h1 class="serif">Every piece has a next chapter.</h1><p>Welcome back, ' + OPULE.esc(user.name.split(' ')[0]) +
       '. Your collection, conversations, and next handovers, in one considered space.</p></div>' +
       '<a class="btn fill" href="#new-listing">List a piece</a>' +
@@ -27,20 +27,21 @@
       '<div class="studio-metric"><p class="cap">Open handovers</p><strong>' + handovers.length + '</strong><small>Plans not yet completed</small></div>' +
       '</div></section>' +
       '<section data-studio-view="correspondence" hidden><section class="studio-section" id="studio-enquiries"><h2 class="serif">Conversations, not noise.</h2>' +
-      '<div class="studio-inbox"><div><p class="cap">Your next step</p><h3>Make room for a considered exchange.</h3><p>' +
-      'Real buyer messaging and payment workflows are not available in this prototype. You can list a piece below or explore the fictional workflow from Your account.' +
-      '</p></div><a class="btn" href="auth.html">Explore test accounts</a></div></section></section>' +
+      '<div id="seller-inbox-root"></div></section></section>' +
       '<section data-studio-view="collection" hidden><section class="studio-section" id="studio-listings"><h2 class="serif">Your collection</h2><p>' +
       'Every piece currently listed under your account.' +
       '</p><div class="catalog-grid" id="seller-catalog"></div><p id="seller-empty" class="form-note" hidden>No pieces listed yet. Start your collection below.</p></section>' +
       '<section class="studio-form-section" id="new-listing"></section></section>';
     var collectionReady = false;
+    var inboxReady = false;
     return function (view) {
+      if (view === 'correspondence' && !inboxReady) {
+        OPULE.renderInbox(document.getElementById('seller-inbox-root'));
+        inboxReady = true;
+      }
       if (view !== 'collection' || collectionReady) return;
       var catalog = document.getElementById('seller-catalog');
-      var fragment = document.createDocumentFragment();
-      mine.forEach(function (listing) { fragment.appendChild(OPULE.listingCard(listing)); });
-      catalog.appendChild(fragment);
+      OPULE.renderListingManagement(catalog, mine);
       document.getElementById('seller-empty').hidden = mine.length !== 0;
       renderForm(document.getElementById('new-listing'));
       collectionReady = true;
@@ -54,12 +55,12 @@
       '<div class="two-col">' +
         '<div>' +
           '<p class="cap">Selling on Opulé</p>' +
-          '<h1 class="display serif" style="font-size:56px;margin-top:16px">Verified sellers only. On purpose.</h1>' +
-          '<p style="margin-top:28px;max-width:520px;font-size:19px">Buyers here are trusting a stranger with a watch, a ring, a bag worth months of salary. So before anything of yours goes on the ledger, we check who you are.</p>' +
+          '<h1 class="display serif" style="font-size:56px;margin-top:16px">Apply to list your collection.</h1>' +
+          '<p style="margin-top:28px;max-width:520px;font-size:19px">Seller applications are saved for review. Automated identity checks, video-call booking and a staff review dashboard are not available yet. Do not enter real ID details while testing.</p>' +
           '<a class="btn fill" href="register.html" style="margin-top:36px">Start the application</a>' +
         '</div>' +
         '<div class="panel">' +
-          '<div class="head"><span class="cap">What verification involves</span></div>' +
+          '<div class="head"><span class="cap">Planned seller review · not operational</span></div>' +
           '<ul class="checklist">' +
             '<li><span class="mark serif">1</span><span>Government ID and a mobile number on your name</span><span class="state">Required</span></li>' +
             '<li><span class="mark serif">2</span><span>A short written application — what you sell and where your items come from</span><span class="state">Required</span></li>' +
@@ -82,21 +83,21 @@
     root.innerHTML =
       '<p class="cap">Seller application</p>' +
       '<h1 class="display serif" style="font-size:56px;margin-top:16px">Under review.</h1>' +
-      '<p style="margin-top:24px;max-width:560px;font-size:19px">Thank you, ' + OPULE.esc(seller.name.split(' ')[0]) + '. Your application is with our verification team. Reviews take a minimum of two days from your video call — we will text and email you either way.</p>' +
+      '<p style="margin-top:24px;max-width:560px;font-size:19px">Thank you, ' + OPULE.esc(seller.name.split(' ')[0]) + '. Your application was saved. Staff review, video calls, email and SMS notifications are not operational in this prototype. Your selected call time is a preference, not a confirmed booking.</p>' +
       '<div class="two-col" style="margin-top:56px">' +
         '<div class="panel">' +
           '<div class="head"><span class="cap">Status</span><span class="cap" style="color:var(--ink)">Pending</span></div>' +
           '<ul class="checklist">' +
             '<li><span class="mark serif">✓</span><span>Application submitted</span><span class="state done">' + OPULE.fmtDate(applied) + '</span></li>' +
-            '<li><span class="mark serif">✓</span><span>ID details received</span><span class="state done">Done</span></li>' +
-            '<li><span class="mark serif">○</span><span>Video call — ' + OPULE.esc(seller.callSlot) + '</span><span class="state">Scheduled</span></li>' +
+            '<li><span class="mark serif">✓</span><span>Application fields saved · not ID-checked</span><span class="state done">Saved</span></li>' +
+            '<li><span class="mark serif">○</span><span>Preferred call time — ' + OPULE.esc(seller.callSlot) + '</span><span class="state">Not booked</span></li>' +
             '<li><span class="mark serif">○</span><span>Staff review</span><span class="state">Earliest ' + OPULE.fmtDate(earliest) + '</span></li>' +
           '</ul>' +
         '</div>' +
         '<div>' +
           '<div style="border:1px solid var(--line);padding:28px 32px">' +
             '<p class="cap" style="margin-bottom:16px">Your video call</p>' +
-            '<p style="font-size:16px">' + OPULE.esc(seller.callSlot) + '. Have your <strong style="color:var(--ivory)">' + OPULE.esc(seller.idType) + '</strong> with you, in a well-lit room. The call takes about ten minutes: we match your face to the ID, then go through your answers together.</p>' +
+            '<p style="font-size:16px">Preferred time: ' + OPULE.esc(seller.callSlot) + '. This is not a confirmed appointment. No identity check is performed by this prototype.</p>' +
           '</div>' +
           '<div style="border:1px solid var(--line);padding:28px 32px;margin-top:24px">' +
             '<p class="cap" style="margin-bottom:16px">While you wait</p>' +
@@ -112,17 +113,17 @@
 
   function renderForm(target) {
     target.innerHTML =
-      '<p class="cap">Verified seller</p>' +
+      '<p class="cap">Seller listing</p>' +
       '<h2 class="serif">List a piece.</h2>' +
       '<p class="form-note">Set a clear price and describe the piece accurately. Real escrow and payment are not available in this prototype.</p>' +
       '<div class="two-col" style="margin-top:56px">' +
         '<form id="sell-form" novalidate>' +
-          '<label class="field"><span>Item title</span><input type="text" id="f-title" placeholder="e.g. Vintage gold wristwatch" required></label>' +
+          '<label class="field"><span>Item title</span><input type="text" id="f-title" maxlength="200" placeholder="e.g. Vintage gold wristwatch" required></label>' +
           '<label class="field"><span>Category</span><select id="f-category">' +
             '<option>Watches</option><option>Bags</option><option>Jewelry</option><option>Sneakers</option><option>Accessories</option><option>Other</option>' +
           '</select></label>' +
           '<label class="field"><span>Listed price (PHP)</span><input type="number" id="f-price" min="1000" max="100000000" step="1" placeholder="185000" required></label>' +
-          '<label class="field"><span>Details</span><input type="text" id="f-meta" placeholder="Year, papers, box, receipts…"></label>' +
+          '<label class="field"><span>Details</span><input type="text" id="f-meta" maxlength="2000" placeholder="Year, papers, box, receipts…"></label>' +
           '<label class="field"><span>Condition</span><select id="f-condition">' +
             '<option>New</option><option>Excellent</option><option>Very good</option><option>Good</option><option>Fair</option>' +
           '</select></label>' +
@@ -135,7 +136,7 @@
           '<div class="panel">' +
             '<div class="head"><span class="cap">Before you list</span></div>' +
             '<dl class="facts">' +
-              '<dt>Photos</dt><dd>Image uploads are not available in this prototype. New pieces display a photography placeholder.</dd>' +
+              '<dt>Photos</dt><dd>After creating a piece, open Manage piece to upload a JPEG, PNG or WebP photo. Up to 5 MB and 20 megapixels; metadata is removed.</dd>' +
               '<dt>Payments</dt><dd>No payments are processed or fees charged by this prototype.</dd>' +
               '<dt>Handovers</dt><dd>The sample accounts demonstrate a simulated exchange, not real escrow.</dd>' +
             '</dl>' +
@@ -170,7 +171,9 @@
         condition: document.getElementById('f-condition').value,
         area: document.getElementById('f-area').value
       });
-      document.getElementById('seller-catalog').appendChild(OPULE.listingCard(listing));
+      var mine = OPULE.getListings().filter(function (row) { return row.sellerId === user.id; });
+      if (!mine.some(function (row) { return row.id === listing.id; })) mine.push(listing);
+      OPULE.renderListingManagement(document.getElementById('seller-catalog'), mine);
       document.getElementById('seller-empty').hidden = true;
       document.querySelector('.studio-metric strong').textContent = document.getElementById('seller-catalog').children.length;
       document.getElementById('listed-note').innerHTML =

@@ -57,6 +57,25 @@
   OPULE.setSeller = async function (seller) { cache.seller = await api('seller', 'PUT', seller); };
   OPULE.clearSeller = async function () { await api('seller', 'DELETE', {}); cache.seller = null; };
   OPULE.addListing = async function (listing) { var row = await api('listings', 'POST', listing); cache.listings.push(row); return row; };
+  OPULE.updateListing = async function (id, changes) {
+    var row = await api('listings/' + encodeURIComponent(id), 'PATCH', changes);
+    cache.listings = cache.listings.map(function (listing) { return listing.id === id ? row : listing; });
+    return row;
+  };
+  OPULE.uploadListingPhoto = async function (id, file) {
+    if (!file || file.size > 5 * 1024 * 1024 || !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      throw new Error('Choose a still JPEG, PNG or WebP image up to 5 MB.');
+    }
+    var data = await new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () { resolve(reader.result.split(',')[1]); };
+      reader.onerror = function () { reject(new Error('Could not read the selected image. Please choose it again.')); };
+      reader.readAsDataURL(file);
+    });
+    var row = await api('listings/' + encodeURIComponent(id) + '/photo', 'PUT', { data: data });
+    cache.listings = cache.listings.map(function (listing) { return listing.id === id ? row : listing; });
+    return row;
+  };
   OPULE.db = {
     all: all, get: get, report: report, api: api,
     put: function (table, row) {

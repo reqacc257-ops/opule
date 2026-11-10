@@ -23,13 +23,16 @@
   if (user) document.getElementById('market-account').textContent = user.name;
   if (user && user.demo && OPULE.demoEnabled) {
     document.getElementById('buyer-chat').href = 'demo.html?account=' + (user.role === 'seller' ? 'alex' : 'jamie') + '&live=1';
+  } else if (user) {
+    document.getElementById('buyer-chat').href = 'inbox.html';
+    document.getElementById('buyer-chat').textContent = 'Your messages';
   }
   function render() {
     var query = search.value.trim().toLocaleLowerCase();
     var category = filters.querySelector('input[name="category"]:checked').value;
     var maxPrice = price.value === '' ? Infinity : Number(price.value);
     var results = listings.filter(function (listing) {
-      return (!query || [listing.title, listing.category, listing.meta].join(' ').toLocaleLowerCase().includes(query)) &&
+      return (!listing.status || listing.status === 'active') && (!query || [listing.title, listing.category, listing.meta].join(' ').toLocaleLowerCase().includes(query)) &&
         (!category || listing.category === category) && (!area.value || listing.area === area.value) &&
         listing.price <= maxPrice;
     });

@@ -27,12 +27,12 @@
       '<div>' +
         '<p class="cap">Seller application</p>' +
         '<h1 class="display serif" style="font-size:56px;margin-top:16px">Tell us who you are.</h1>' +
-        '<p style="margin-top:24px;max-width:480px;font-size:18px">One form, one video call, and a human review that takes a <strong style="color:var(--ivory)">minimum of two days</strong>. Buying never requires this — only selling does.</p>' +
+        '<p style="margin-top:24px;max-width:480px;font-size:18px">This prototype saves a seller application. Staff review, identity verification and video-call scheduling are not operational yet. Use fictional details; do not enter real ID information. Your selected call time is only a preference.</p>' +
         '<hr class="rule" style="margin-top:40px">' +
         '<dl class="facts">' +
-          '<dt>ID</dt><dd>Any Philippine government ID. You present it live on the call; we don\u2019t ask you to upload photos of it.</dd>' +
-          '<dt>The call</dt><dd>About ten minutes with Opulé staff. Face-to-ID match, then your answers below, in your own words.</dd>' +
-          '<dt>Privacy</dt><dd>Handled under the Data Privacy Act. Buyers only ever see your first name and general area.</dd>' +
+          '<dt>ID</dt><dd>No identity checks or ID uploads are available. Never submit an ID photo here.</dd>' +
+          '<dt>The call</dt><dd>Planned workflow only. Choosing a time does not book a call.</dd>' +
+          '<dt>Privacy</dt><dd>Applications are stored on this server. Use fictional information while testing; a production privacy policy is still required.</dd>' +
         '</dl>' +
       '</div>' +
       '<form id="reg-form" novalidate>' +
@@ -67,7 +67,7 @@
           '<select id="r-time"><option>9:00 AM</option><option>11:00 AM</option><option>2:00 PM</option><option>4:00 PM</option><option>7:00 PM</option></select>' +
         '</label></fieldset>' +
 
-        '<p class="form-note">Review starts after the call and takes a minimum of two days. We text and email you either way.</p>' +
+        '<p class="form-note">Your application will be saved as pending. No call is booked and no email or SMS notification is sent.</p>' +
         '<p class="error-note" id="r-error">Fill in your name, mobile number, email, and a call date.</p>' +
         '<div class="step-actions"><button class="btn quiet" type="button" data-step-back hidden>Back</button><button class="btn fill" type="button" data-step-next>Continue</button><button class="btn fill" type="submit" hidden>Submit application</button></div>' +
       '</form>' +

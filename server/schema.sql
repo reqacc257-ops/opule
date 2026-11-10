@@ -17,6 +17,10 @@ CREATE TABLE IF NOT EXISTS listings (
   payload text NOT NULL
 );
 CREATE TABLE IF NOT EXISTS venues (id text PRIMARY KEY, payload text NOT NULL);
+CREATE TABLE IF NOT EXISTS listing_photos (
+  id text PRIMARY KEY REFERENCES listings(id),
+  payload text NOT NULL
+);
 CREATE TABLE IF NOT EXISTS conversations (
   id text PRIMARY KEY,
   buyer_id text NOT NULL REFERENCES users(id),

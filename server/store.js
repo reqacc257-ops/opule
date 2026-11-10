@@ -1,7 +1,7 @@
 import { randomUUID, randomBytes } from 'node:crypto';
 import { tokenHash } from './crypto.js';
 
-const tables = new Set(['users', 'sellers', 'listings', 'venues', 'conversations', 'messages', 'handovers', 'rewards', 'notifications', 'settings']);
+const tables = new Set(['users', 'sellers', 'listings', 'listing_photos', 'venues', 'conversations', 'messages', 'handovers', 'rewards', 'notifications', 'settings']);
 
 export function store(pool, cipher) {
   function check(table) { if (!tables.has(table)) throw new Error('Unknown record type'); }

@@ -23,7 +23,7 @@
     }
     var badge = document.createElement('span');
     badge.className = 'catalog-badge';
-    badge.textContent = listing.sample ? 'Market sample · stock image' : 'Listed piece';
+    badge.textContent = listing.sample ? 'Market sample · stock image' : listing.status === 'sold' ? 'Sold' : listing.status === 'archived' ? 'Archived' : 'Listed piece';
     photo.appendChild(badge);
     var content = document.createElement('div');
     content.className = 'catalog-copy';

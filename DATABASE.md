@@ -40,17 +40,23 @@ Set these environment variables in the Vercel project **before redeploying**:
 - `DATABASE_TLS=true`
 - `DATA_ENCRYPTION_KEY`: your existing 64-character hexadecimal encryption key, or a newly generated key for a new database
 - `ENABLE_DEMO=false`
+- `ENABLE_SAMPLE_ACCOUNTS=true` to enable the fictional buyer and seller logins (or `false` to disable them).
 - `DATABASE_CA_FILE`, only if the database requires a custom trusted CA. Include that certificate in the function bundle; never publish it in `assets`.
 
 The database must be reachable from Vercel and the configured role must be able to initialize the schema. Keep existing encryption keys when reusing a database. A local PostgreSQL URL will not work on Vercel.
 
 After deployment, check `/api/health` for `{"ok":true}`, `/api/bootstrap` for JSON, and `/assets/styles.css` for CSS. Missing configuration or a failed database connection returns JSON with HTTP 503 and logs the startup failure, rather than a platform HTML/text 404. Frontend changes alone cannot provision a database or configure deployment secrets.
 
+### Sample buttons disabled
+
+If the account page says sample login is disabled, check `/api/bootstrap`: `demoEnabled: false` means the running backend has not enabled sample accounts. In Render, open the **web service** (not the PostgreSQL database), select **Environment**, add `ENABLE_SAMPLE_ACCOUNTS` with value `true`, and choose **Save, rebuild, and deploy**. Keep `ENABLE_DEMO=false`. On Vercel, add the same sample variable to the environment being deployed and redeploy. Changes to a local `.env`, `.env.example`, or `render.yaml` do not automatically update an existing manually configured hosting service. After deployment, `/api/bootstrap` should return `demoEnabled: true`, and both sample buttons should become available on refresh.
+
 ## Data model
 
 - `users`: accounts, salted scrypt password hashes, keyed email lookup.
 - `sellers`: applications and review status.
 - `listings`, `venues`: catalog and public meeting-place records.
+- `listing_photos`: processed JPEG photos stored as encrypted records, separate from the catalog bootstrap.
 - `conversations`, `messages`: participants and encrypted message bodies.
 - `handovers`: versioned demo plan snapshots and completion state.
 - `rewards`: one idempotent reward per completed handover.
@@ -80,7 +86,17 @@ The same navigation helper powers the buyer edit, collection, and approach views
 
 The buyer landing page is a filterable marketplace: search by piece or designer, narrow by category, general area, and maximum price, and sort by price or name. Filters are local to the current view, not saved preferences. On mobile, additional filters collapse behind "Refine your selection."
 
-Sample login opens Jamie's buyer marketplace or Alex's seller studio. The studio shows only the signed-in seller's listings and authorized conversation/open-handover counts, with access to the existing shared sample inbox. Real verified sellers retain the listing form; applicants retain application and pending-review views. No sales totals or revenue are invented, and real messaging/payment tools remain unavailable.
+Sample login opens Jamie's buyer marketplace or Alex's seller studio. The studio shows only the signed-in seller's listings and authorized conversation/open-handover counts, with access to the existing shared sample inbox. Approved real sellers retain the listing form; applicants retain application and pending-review views. No sales totals or revenue are invented. Payment tools remain unavailable.
+
+### Real listings and correspondence
+
+Approved, non-sample sellers can create pieces, edit their title, description, price, category, condition and general area, and mark them available, sold, or archived from **Collection → Manage piece**. Sold pieces no longer appear in buyer browse results or accept new enquiries. Archived pieces and photos are hidden from public responses but remain available to their owner; existing participants keep their conversation and listing-title context. Archiving is not deletion. All update and photo routes check ownership and seller approval on the server. Staff approval tools are still missing; real applications remain pending until an operational review process exists.
+
+After creating a piece, its owner can upload one still JPEG, PNG or WebP photo, up to 5 MB and 20 megapixels. The server decodes and re-encodes with Sharp, applies orientation, strips metadata, and limits dimensions to 1600 × 1600 before encrypting the photo in PostgreSQL. Replacing a photo preserves the existing photo if processing fails. This is a single-photo implementation, not a gallery, moderation system, or object-storage service. Run `npm ci` after updating dependencies and restart the server to initialize the new `listing_photos` table. Deployments must include Sharp's platform-specific optional dependencies.
+
+Real buyers can select **Message the seller** on an available real listing. The server creates or reuses one deterministic conversation per buyer/listing, ignores client-supplied ownership details, and refuses sample listings/accounts. Both participants can read and reply through [inbox.html](inbox.html); approved sellers can also use **Correspondence** in the studio. Names and listing context are included in participant-only inbox responses, not emails or full account records. Messages and notification records persist; the inbox uses manual refresh, not push delivery. The latest 500 messages are returned chronologically. Drafts remain in memory per conversation during the visit and survive failed sends; they do not survive a full reload. Existing conversations remain open after a piece is marked sold or archived. The sample phone handover remains a separate simulation and is not used for real listings.
+
+Listing, application and pending-review copy explicitly distinguishes implemented features from planned identity verification, staff review, video calls, notifications, payments and escrow. Messaging is not identity verification, item authentication, buyer protection or a managed transaction.
 
 The sample studio includes an inline shared inbox: find a buyer, read persisted messages, refresh a conversation, and send a reply without leaving the dashboard. Unsent drafts remain in memory per conversation during the visit; they are not saved across reloads. Failed sends retain the draft. Inventory search and category filters operate on the sample seller's own pieces. Handover cards show the latest saved plan per conversation, and "Open handover" resumes the selected buyer's simulation rather than always opening Jamie's chat.
 

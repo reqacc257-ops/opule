@@ -45,7 +45,7 @@
         }
       });
     });
-  } else sampleStatus.textContent = 'Sample accounts are not enabled on this server.';
+  } else sampleStatus.textContent = 'Sample login is disabled by this server’s configuration. The site owner must set ENABLE_SAMPLE_ACCOUNTS=true in the hosting service’s environment settings and redeploy. Keep ENABLE_DEMO=false in production.';
   document.getElementById('account-form').addEventListener('submit', async function (event) {
     event.preventDefault();
     var action = event.submitter.value;

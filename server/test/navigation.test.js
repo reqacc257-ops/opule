@@ -66,7 +66,7 @@ test('application steps validate before advancing, keep values, and reveal inval
 });
 
 test('all pages load shared navigation and reduced motion disables document transitions', () => {
-  for (const page of ['index', 'listing', 'register', 'sell', 'auth', 'demo']) {
+  for (const page of ['index', 'listing', 'register', 'sell', 'auth', 'demo', 'inbox']) {
     const html = readFileSync(new URL('../../' + page + '.html', import.meta.url), 'utf8');
     assert.ok(html.indexOf('assets/app.js') < html.indexOf('assets/navigation.js'));
     assert.match(html, /src="assets\/navigation\.js"/);
